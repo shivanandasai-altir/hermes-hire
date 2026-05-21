@@ -1,4 +1,6 @@
 import { execSync } from "node:child_process";
+import { callHermes, stripCodeFences } from "@/services/ai";
+import { meetingPrompt, formatMeetingPrompt } from "@/prompts";
 
 interface MeetingDetails {
   summary: string;
@@ -24,62 +26,12 @@ export async function parseMeetingRequest(
   jobTitle: string,
   candidateEmail?: string,
 ): Promise<MeetingDetails> {
-  const systemPrompt = `You are a scheduling assistant. Parse the user's request to schedule a Google Meet call.
+  const content = await callHermes([
+    { role: "system", content: meetingPrompt },
+    { role: "user", content: formatMeetingPrompt(userInput, candidateName, jobTitle, candidateEmail) },
+  ], { temperature: 0.1, maxTokens: 512 });
 
-Return ONLY a JSON object with this exact structure (no markdown, no extra text):
-{
-  "summary": "Event title",
-  "description": "Event description",
-  "startDateTime": "RFC3339 datetime string",
-  "endDateTime": "RFC3339 datetime string (1 hour after start)",
-  "attendees": ["email addresses if provided"]
-}
-
-Rules:
-- Duration is always 1 hour unless specified otherwise
-- If timezone is not specified, default to UTC
-- Relative dates like "tomorrow" mean the next day from today
-- "today" means the current date
-- Times should be parsed as 24h or am/pm format
-- If only a date is given (no time), default to 10:00 AM
-- Include the candidate's email in attendees if provided`;
-
-  const userPrompt = `Request: "${userInput}"
-Candidate: ${candidateName}
-Job: ${jobTitle}
-Candidate email: ${candidateEmail || "not provided"}
-Current time: ${new Date().toISOString()}`;
-
-  const response = await fetch(
-    `${process.env.HERMES_API_URL || "https://api.hermes.ai/v1"}/chat/completions`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.HERMES_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "hermes-3",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        temperature: 0.1,
-        max_tokens: 512,
-      }),
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Hermes parse error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const content = data.choices[0]?.message?.content;
-  if (!content) throw new Error("Empty response from Hermes");
-
-  const jsonStr = content.replace(/```json\s*|\s*```/g, "").trim();
-  const parsed = JSON.parse(jsonStr);
+  const parsed = JSON.parse(stripCodeFences(content));
 
   return {
     summary: parsed.summary || `Interview: ${candidateName} - ${jobTitle}`,
