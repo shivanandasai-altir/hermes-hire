@@ -46,7 +46,6 @@ export function Agent({
   const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [lastMessage, setLastMessage] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleMessage = useCallback((message: VapiMessage) => {
@@ -92,11 +91,10 @@ export function Agent({
     };
   }, [handleMessage, handleSpeechStart, handleSpeechEnd, handleError]);
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      setLastMessage(messages[messages.length - 1].content);
-    }
-  }, [messages]);
+  // Derive last message from messages array (no effect needed)
+  const lastMessage = messages.length > 0
+    ? messages[messages.length - 1].content
+    : "";
 
   // Handle call completion
   useEffect(() => {
