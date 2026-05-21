@@ -4,14 +4,10 @@ import Link from "next/link";
 import {
   ArrowRight,
   Sparkles,
-  MessageSquareText,
-  Users,
-  Target,
   ChevronRight,
   Bot,
-  Mic,
-  Calendar,
 } from "lucide-react";
+import { AnimatedFeatures } from "@/components/animated-features";
 
 const ROLE_FLOW = [
   {
@@ -37,38 +33,7 @@ const ROLE_FLOW = [
   },
 ];
 
-const FEATURES = [
-  {
-    icon: Sparkles,
-    title: "AI Candidate Summary",
-    desc: "Resume analysis and role-fit assessment powered by Hermes Agent.",
-  },
-  {
-    icon: MessageSquareText,
-    title: "AI Interview Questions",
-    desc: "Role-specific technical and behavioral questions generated in seconds.",
-  },
-  {
-    icon: Mic,
-    title: "Voice Interviews",
-    desc: "AI interviewer conducts calls via Vapi, captures transcripts, auto-generates feedback.",
-  },
-  {
-    icon: Calendar,
-    title: "Google Meet Scheduling",
-    desc: "Type 'Schedule tomorrow at 2pm' — Hermes + gog create the event with a Meet link.",
-  },
-  {
-    icon: Users,
-    title: "Role-Based Workspace",
-    desc: "HR, Interviewer, and Manager each see exactly what they need.",
-  },
-  {
-    icon: Target,
-    title: "Hiring Decisions",
-    desc: "Managers review AI insights + feedback, then Hire or Reject with one click.",
-  },
-];
+
 
 const TECH_STACK = [
   "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui",
@@ -206,28 +171,7 @@ export default function Home() {
           decision support, and transparent hiring history.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {FEATURES.map((feature, i) => {
-            const Icon = feature.icon;
-            return (
-              <div
-                key={feature.title}
-                className="hermes-card p-6"
-                style={{ animationDelay: `${0.1 + i * 0.08}s` }}
-              >
-                <div className="size-10 rounded-lg flex items-center justify-center mb-4 bg-[var(--gold-soft)]">
-                  <Icon className="size-5 text-[var(--gold)]" />
-                </div>
-                <h3 className="font-semibold text-sm text-[var(--cream)] mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-xs text-[var(--cream)]/50 leading-relaxed">
-                  {feature.desc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+        <AnimatedFeatures />
       </section>
 
       {/* ─── TECH STACK ─── */}
