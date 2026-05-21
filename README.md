@@ -1,18 +1,18 @@
-# Hermes Hire — AI Hiring Orchestrator
+# HermesHire — Autonomous AI Hiring Copilot
 
-> Role-based AI hiring command center powered by Hermes Agent.
+> AI-powered collaborative hiring workflow platform
 
 **Status:** Hackathon MVP · Build time ~3 hours
 
 ## Overview
 
-HermesHire is an AI-native hiring command center that helps HR teams, interviewers, and managers collaborate across the complete recruitment workflow.
+HermesHire is an AI-native hiring command center powered by Hermes Agent that helps HR teams, interviewers, and managers collaborate across the complete recruitment workflow.
 
-- **HR** creates job openings, adds candidates with resume text, generates AI summaries, moves candidates through pipeline stages, and assigns interviewers.
-- **Interviewers** view assigned candidates, generate AI interview questions, and submit structured feedback.
-- **Managers** review candidate summaries, interview feedback, and hire or reject candidates. Managers can also schedule Google Meet calls with candidates using natural language (powered by Hermes Agent + gog CLI).
+For the hackathon MVP, HR can create a job opening, add candidates with resume text, generate AI summaries, move candidates to interview, and assign interviewers. Interviewers can view assigned candidates, generate AI interview questions, and submit feedback. Managers can review candidate summaries, interview feedback, and hire or reject candidates. Managers can also schedule Google Meet calls with candidates using natural language.
 
 The platform replaces scattered spreadsheets, emails, and traditional ATS complexity with a lightweight role-based hiring workspace featuring AI-assisted candidate summaries, interview question generation, feedback analysis, decision support, and transparent hiring history.
+
+Built using Next.js, PostgreSQL, Prisma, and Hermes Agent as a focused hackathon MVP designed to ship within ~3 hours.
 
 ## Tech Stack
 
@@ -25,7 +25,9 @@ The platform replaces scattered spreadsheets, emails, and traditional ATS comple
 | State | [TanStack Query](https://tanstack.com/query) 5 |
 | ORM | [Prisma](https://www.prisma.io/) 7 (Postgres adapter) |
 | Database | [Neon](https://neon.tech/) (serverless Postgres) |
-| AI | Hermes Agent API |
+| AI | [Hermes Agent](https://hermes.ai/) |
+| Voice | [Vapi](https://vapi.ai/) (AI interviewer calls) |
+| Calendar | [gog CLI](https://gogcli.sh/) (Google Meet scheduling) |
 | Deployment | [Vercel](https://vercel.com/) |
 
 ## Data Model
@@ -78,7 +80,13 @@ pnpm dev
 | `HERMES_API_KEY` | Hermes Agent API key (for AI features) |
 | `HERMES_API_URL` | Hermes Agent API URL |
 | `NEXT_PUBLIC_VAPI_WEB_TOKEN` | Vapi voice agent token (for AI interviewer calls) |
-| — | gog CLI is used for Google Meet scheduling. Install: `brew install gogcli` |
+
+### Google Meet Scheduling Setup
+
+```bash
+brew install gogcli
+gog auth add your@email.com --services calendar
+```
 
 ## Project Structure
 
@@ -95,20 +103,20 @@ pnpm dev
 │   ├── login/                # Role selector
 │   └── api/                  # Route handlers + AI proxy
 ├── components/
-│   └── ui/                   # shadcn/ui components
+│   ├── ui/                   # shadcn/ui components
+│   └── voice/                # Vapi voice agent
+│       └── Agent.tsx         # Voice call UI + transcript capture
 ├── lib/
 │   ├── constants.ts          # Roles, stages, transitions
-│   ├── db.ts                 # Prisma client singleton
-│   ├── meet.ts               # Hermes-powered Google Meet scheduling
+│   ├── db.ts                 # Prisma client singleton (v7 adapter)
+│   ├── meet.ts               # Hermes-powered Google Meet scheduling via gog
 │   ├── vapi.sdk.ts           # Vapi voice SDK
 │   ├── utils.ts              # cn() utility
 │   └── voice/
 │       ├── assistant-config.ts  # Vapi AI interviewer config
 │       └── feedback.ts          # Transcript → structured feedback via Hermes
-├── components/
-│   ├── ui/                   # shadcn/ui components
-│   └── voice/                # Voice agent components
-│       └── Agent.tsx         # Vapi call UI + transcript capture
+├── types/
+│   └── vapi.ts               # Vapi message types
 ├── prisma/
 │   └── schema.prisma         # Database schema
 └── docs/
@@ -122,9 +130,21 @@ HR creates a job → adds candidate → AI summarizes resume
 → moves to Interview → assigns Interviewer
 → Interviewer generates AI questions → submits feedback
 → Manager reviews → makes final decision (hire/reject)
+  └── or schedules a Google Meet call via natural language
 ```
 
 Every action is tracked in an audit timeline on the candidate detail page.
+
+## Key Features
+
+| Feature | Description | Powered By |
+|---------|-------------|------------|
+| AI Candidate Summary | Resume analysis & fit assessment | Hermes Agent |
+| AI Interview Questions | Role-specific technical + behavioral questions | Hermes Agent |
+| Hiring Recommendation | Data-driven hire/no-hire decision support | Hermes Agent |
+| Voice Interview | AI agent calls candidate, captures transcript | Vapi |
+| Google Meet Scheduling | Natural language → calendar event | Hermes + gog CLI |
+| Audit Timeline | Full action history per candidate | Prisma (JSON field) |
 
 ## Skills
 

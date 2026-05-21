@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hermes Hire — AI Hiring Orchestrator",
+  title: "HermesHire — Autonomous AI Hiring Copilot",
   description:
     "Role-based hiring command center powered by Hermes Agent for HR teams, interviewers, and managers.",
 };
