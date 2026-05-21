@@ -1,0 +1,41 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "./providers";
+import "./globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Hermes Hire — AI Hiring Orchestrator",
+  description:
+    "Role-based hiring command center powered by Hermes Agent for HR teams, interviewers, and managers.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
+      </body>
+    </html>
+  );
+}
