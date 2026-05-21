@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://docs.google.com/presentation/d/1YRGThSz-tPN_Ua5ivP_BHzUuv5-sBNnZj6yS5shpPss/edit?slide=id.g3e3d0bcc722_0_756#slide=id.g3e3d0bcc722_0_756",
+      "permanent": false,
+      "has": [
+        {
+          "type": "host",
+          "value": "hermes-slides.shivanandasai.xyz"
+        }
+      ]
+    }
+  ]
+}
