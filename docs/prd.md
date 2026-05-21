@@ -17,7 +17,7 @@ Hermes Hire is an AI-native hiring command center powered by Hermes Agent that l
 
 - **HR** creates job openings, adds candidates with resume text, generates AI summaries, moves candidates through pipeline stages, and assigns interviewers.
 - **Interviewers** view assigned candidates, generate AI interview questions, and submit structured feedback.
-- **Managers** review AI summaries, interviewer feedback, and approve, reject, or hire candidates.
+- **Managers** review AI summaries, interviewer feedback, and hire or reject candidates (plus schedule Google Meet calls via natural language).
 
 Every action is captured in an audit timeline for full transparency.
 
@@ -38,8 +38,9 @@ Every action is captured in an audit timeline for full transparency.
 11. As an interviewer, I want to submit feedback (rating, recommendation, comments) after an interview, so that my evaluation is captured.
 12. As a manager, I want to see candidates in Manager Review stage, so that I can make final decisions.
 13. As a manager, I want to review the AI summary and interviewer feedback side by side, so that I have all context for a decision.
-14. As a manager, I want to approve, reject, or hire a candidate, so that the pipeline progresses to a final outcome.
-15. As any user, I want to see an audit timeline on the candidate detail page, so that I can trace every action taken on that candidate.
+14. As a manager, I want to hire or reject a candidate, so that the pipeline resolves to a final outcome.
+15. As a manager, I want to schedule a Google Meet call with a candidate using natural language, so that I can speak with them before making a final decision.
+16. As any user, I want to see an audit timeline on the candidate detail page, so that I can trace every action taken on that candidate.
 
 ---
 
@@ -68,14 +69,112 @@ Every action is captured in an audit timeline for full transparency.
 - Use **Server Components** for data-fetching pages (dashboard, lists).
 - Use **Client Components** for interactive pieces (Kanban board, forms, AI generation buttons).
 
+### Manager Decision
+- Simplified to two unambiguous actions: **Hire** or **Reject**.
+- **Hire** → stage becomes `HIRED`, audit log: "Hired by Manager"
+- **Reject** → stage becomes `REJECTED`, audit log: "Rejected by Manager"
+- No "Approve" option — it was redundant with "Hire".
+
+### Hermes-Powered Google Meet Scheduling (via gog CLI)
+- Manager types natural language: *"Schedule a call with Jane tomorrow at 2pm"*
+- **Step 1:** Hermes Agent parses the request → extracts summary, start/end time, attendees
+- **Step 2:** Server Action calls `gog` CLI (`brew install gogcli`) → creates calendar event with `--with-meet` flag
+- **Step 3:** Meet link returned and stored on `Candidate` record, displayed in Manager dashboard
+- Falls back to a clear error if `gog` is not installed or authenticated.
+
+**Setup:**
+```bash
+brew install gogcli
+gog auth add your@email.com --services calendar
+```
+
+```typescript
+// lib/meet.ts — Hermes parses, gog creates
+const result = await scheduleMeetingWithHermes(
+  "Schedule interview tomorrow at 2pm",
+  "Jane Doe",
+  "Frontend Engineer",
+);
+// result.meetLink → "https://meet.google.com/abc-defg-hij"
+```
+
 ### AI Integration (Hermes Agent)
 - **Live from start.** No mock mode.
-- AI service module at `services/ai.ts` with three functions:
-  - `generateCandidateSummary(resumeText: string, jobTitle: string): Promise<string>`
-  - `generateInterviewQuestions(candidateSummary: string, jobTitle: string): Promise<string>`
-  - `generateRecommendation(candidateSummary: string, feedbackSummary: string): Promise<string>`
-- Each function calls a Next.js API route (`/api/ai/summary`, `/api/ai/questions`, `/api/ai/recommendation`) which proxies to the Hermes Agent API.
-- AI responses streamed or returned as plain text, stored in the `Candidate` model.
+- Hermes Agent API key stored in env var `HERMES_API_KEY`.
+- In addition to hiring-specific AI, Hermes also powers the **Google Meet scheduling** (parses natural language into structured calendar data).
+
+#### Setup
+
+```env
+# .env
+HERMES_API_KEY="sk-hermes-..."
+HERMES_API_URL="https://api.hermes.ai/v1"  # or self-hosted endpoint
+```
+
+The AI service lives at `services/ai.ts` and calls the Hermes Agent API directly (no proxy route — Server Actions call Hermes directly to reduce latency).
+
+#### Core API Endpoints
+
+| Function | Endpoint | Input | Output |
+|----------|----------|-------|--------|
+| `generateSummary` | `POST /v1/chat/completions` | Resume text + job title | Candidate summary: strengths, skills, risks, fit assessment |
+| `generateQuestions` | `POST /v1/chat/completions` | Candidate profile + job role | 5-7 technical + behavioral interview questions |
+| `generateRecommendation` | `POST /v1/chat/completions` | Candidate summary + interview feedback | Hiring recommendation (Strong Hire / Hire / No Hire) with reasoning |
+
+All three use the same chat completion API with different system prompts:
+
+```typescript
+// services/ai.ts — core Hermes Agent client
+
+const HERMES_API_URL = process.env.HERMES_API_URL || "https://api.hermes.ai/v1";
+
+async function callHermes(systemPrompt: string, userPrompt: string): Promise<string> {
+  const res = await fetch(`${HERMES_API_URL}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.HERMES_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "hermes-3",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.3,
+      max_tokens: 1024,
+    }),
+  });
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+export async function generateCandidateSummary(resumeText: string, jobTitle: string) {
+  return callHermes(
+    "You are an expert HR recruiter. Summarize the candidate's resume for the given role.",
+    `Job: ${jobTitle}\n\nResume:\n${resumeText}`
+  );
+}
+
+export async function generateInterviewQuestions(candidateProfile: string, jobTitle: string) {
+  return callHermes(
+    "You are a senior technical interviewer. Generate 5-7 targeted interview questions.",
+    `Role: ${jobTitle}\n\nCandidate Profile:\n${candidateProfile}`
+  );
+}
+
+export async function generateRecommendation(candidateSummary: string, feedbackSummary: string) {
+  return callHermes(
+    "You are a hiring manager. Analyze the candidate summary and interviewer feedback to provide a hiring recommendation.",
+    `Candidate Summary:\n${candidateSummary}\n\nInterviewer Feedback:\n${feedbackSummary}`
+  );
+}
+```
+
+#### Error Handling & Fallback
+- If Hermes API is unreachable or returns an error, the Server Action returns a user-friendly error message.
+- No mock responses — the app gracefully shows "AI unavailable" in the UI.
+- All successful AI responses are stored on the `Candidate` model (`aiSummary`, `aiQuestions`, `aiRecommendation` columns) to avoid redundant API calls.
 
 ### Database & Deployment
 - **PostgreSQL on Neon** (serverless, free tier).

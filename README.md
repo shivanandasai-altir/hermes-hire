@@ -10,7 +10,7 @@ HermesHire is an AI-native hiring command center that helps HR teams, interviewe
 
 - **HR** creates job openings, adds candidates with resume text, generates AI summaries, moves candidates through pipeline stages, and assigns interviewers.
 - **Interviewers** view assigned candidates, generate AI interview questions, and submit structured feedback.
-- **Managers** review candidate summaries, interview feedback, and approve, reject, or hire candidates.
+- **Managers** review candidate summaries, interview feedback, and hire or reject candidates. Managers can also schedule Google Meet calls with candidates using natural language (powered by Hermes Agent + gog CLI).
 
 The platform replaces scattered spreadsheets, emails, and traditional ATS complexity with a lightweight role-based hiring workspace featuring AI-assisted candidate summaries, interview question generation, feedback analysis, decision support, and transparent hiring history.
 
@@ -76,6 +76,9 @@ pnpm dev
 |----------|-------------|
 | `DATABASE_URL` | Neon PostgreSQL connection string |
 | `HERMES_API_KEY` | Hermes Agent API key (for AI features) |
+| `HERMES_API_URL` | Hermes Agent API URL |
+| `NEXT_PUBLIC_VAPI_WEB_TOKEN` | Vapi voice agent token (for AI interviewer calls) |
+| — | gog CLI is used for Google Meet scheduling. Install: `brew install gogcli` |
 
 ## Project Structure
 
@@ -96,7 +99,16 @@ pnpm dev
 ├── lib/
 │   ├── constants.ts          # Roles, stages, transitions
 │   ├── db.ts                 # Prisma client singleton
-│   └── utils.ts              # cn() utility
+│   ├── meet.ts               # Hermes-powered Google Meet scheduling
+│   ├── vapi.sdk.ts           # Vapi voice SDK
+│   ├── utils.ts              # cn() utility
+│   └── voice/
+│       ├── assistant-config.ts  # Vapi AI interviewer config
+│       └── feedback.ts          # Transcript → structured feedback via Hermes
+├── components/
+│   ├── ui/                   # shadcn/ui components
+│   └── voice/                # Voice agent components
+│       └── Agent.tsx         # Vapi call UI + transcript capture
 ├── prisma/
 │   └── schema.prisma         # Database schema
 └── docs/
