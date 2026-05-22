@@ -80,10 +80,9 @@ npm install
 
 # ─── Make CLI executable ───
 mkdir -p "$BIN_DIR"
-cat > "$BIN_DIR/hermes" << 'SCRIPT'
+cat > "$BIN_DIR/hermes" << SCRIPT
 #!/usr/bin/env bash
-DIR="$(cd "$(dirname "$0")/../.hermeshire/repo" && pwd)"
-exec node "$DIR/bin/hermes.mjs" "$@"
+exec node "$INSTALL_DIR/repo/bin/hermes.mjs" "$@"
 SCRIPT
 chmod +x "$BIN_DIR/hermes"
 
