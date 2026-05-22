@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ─── HermesHire — One-command install ───
+# ─── Hermes-Hire — One-command install ───
 # curl -fsSL https://hermes-hire.xyz/install.sh | bash
 
 BOLD='\033[1m'
@@ -13,17 +13,17 @@ GOLD='\033[38;5;214m'
 NC='\033[0m' # No Color
 
 echo ""
-echo -e "${GOLD}  ╔══════════════════════════════════════════════════════╗${NC}"
-echo -e "${GOLD}  ║                                                     ║${NC}"
-echo -e "${GOLD}  ║   ██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗${NC}"
-echo -e "${GOLD}  ║   ██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝${NC}"
-echo -e "${GOLD}  ║   ███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗${NC}"
-echo -e "${GOLD}  ║   ██╔══██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ╚════██║${NC}"
-echo -e "${GOLD}  ║   ██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║${NC}"
-echo -e "${GOLD}  ║   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝${NC}"
-echo -e "${GOLD}  ║                                                     ║${NC}"
-echo -e "${GOLD}  ║        ◈  Autonomous AI Hiring Copilot  ◈           ║${NC}"
-echo -e "${GOLD}  ╚══════════════════════════════════════════════════════╝${NC}"
+echo -e "${GOLD}  ╔════════════════════════════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GOLD}  ║                                                                                        ║${NC}"
+echo -e "${GOLD}  ║██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗          ██╗  ██╗██╗██████╗ ███████╗║${NC}"
+echo -e "${GOLD}  ║██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝          ██║  ██║██║██╔══██╗██╔════╝║${NC}"
+echo -e "${GOLD}  ║███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗  █████╗  ███████║██║██████╔╝█████╗  ║${NC}"
+echo -e "${GOLD}  ║██╔══██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ╚════██║  ╚════╝  ██╔══██║██║██╔══██╗██╔══╝  ║${NC}"
+echo -e "${GOLD}  ║██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║          ██║  ██║██║██║  ██║███████╗║${NC}"
+echo -e "${GOLD}  ║╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝          ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝║${NC}"
+echo -e "${GOLD}  ║                                                                                        ║${NC}"
+echo -e "${GOLD}  ║                   Autonomous AI Hiring Copilot · v0.1.0                                ║${NC}"
+echo -e "${GOLD}  ╚════════════════════════════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
 # ─── Detect OS ───
@@ -60,7 +60,7 @@ BIN_DIR="${BIN_DIR:-$HOME/.local/bin}"
 mkdir -p "$INSTALL_DIR"
 
 # ─── Download CLI ───
-echo -e "${DIM}Downloading HermesHire CLI...${NC}"
+echo -e "${DIM}Downloading Hermes-Hire CLI...${NC}"
 
 # Clone the repo (lightweight, no history)
 if [ ! -d "$INSTALL_DIR/repo" ]; then
@@ -99,7 +99,7 @@ fi
 if [ -n "$SHELL_CONFIG" ]; then
   if ! grep -q "$BIN_DIR" "$SHELL_CONFIG" 2>/dev/null; then
     echo "" >> "$SHELL_CONFIG"
-    echo "# HermesHire CLI" >> "$SHELL_CONFIG"
+    echo "# Hermes-Hire CLI" >> "$SHELL_CONFIG"
     echo "export PATH=\"\$PATH:$BIN_DIR\"" >> "$SHELL_CONFIG"
     echo -e "${DIM}Added $BIN_DIR to PATH in $SHELL_CONFIG${NC}"
   fi
@@ -108,7 +108,7 @@ fi
 # ─── Verify ───
 echo ""
 if command -v hermes &> /dev/null || [ -f "$BIN_DIR/hermes" ]; then
-  echo -e "${GREEN}✅ HermesHire installed successfully!${NC}"
+  echo -e "${GREEN}✅ Hermes-Hire installed successfully!${NC}"
   echo ""
   echo -e "Next steps:"
   echo -e "  ${GOLD}1.${NC} Restart your terminal or run: ${BOLD}export PATH=\"\$PATH:$BIN_DIR\"${NC}"

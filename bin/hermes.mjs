@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// CLI entry point for HermesHire
+// CLI entry point for Hermes-Hire
 // Built with commander, chalk, conf
 
 import { Command } from "commander";
@@ -9,24 +9,36 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 // ─── ASCII HEADER ───
+const BOX_INNER = 88;
+
+function boxRow(gold, text = "") {
+  const pad = Math.max(0, BOX_INNER - text.length);
+  const left = Math.floor(pad / 2);
+  return gold(`  ║${" ".repeat(left)}${text}${" ".repeat(pad - left)}║`);
+}
+
 function printHeader() {
   const gold = chalk.hex("#d4a853");
-  const dim = chalk.dim;
-  const bold = chalk.bold;
+  const border = gold(`  ╔${"═".repeat(BOX_INNER)}╗`);
+
+  const logo = [
+    "██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗          ██╗  ██╗██╗██████╗ ███████╗",
+    "██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝          ██║  ██║██║██╔══██╗██╔════╝",
+    "███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗  █████╗  ███████║██║██████╔╝█████╗  ",
+    "██╔══██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ╚════██║  ╚════╝  ██╔══██║██║██╔══██╗██╔══╝  ",
+    "██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║          ██║  ██║██║██║  ██║███████╗",
+    "╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝          ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝",
+  ];
 
   console.log("");
-  console.log(gold("  ╔══════════════════════════════════════════════════════╗"));
-  console.log(gold("  ║                                                     ║"));
-  console.log(gold("  ║   ██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗"));
-  console.log(gold("  ║   ██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝"));
-  console.log(gold("  ║   ███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗"));
-  console.log(gold("  ║   ██╔══██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ╚════██║"));
-  console.log(gold("  ║   ██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║"));
-  console.log(gold("  ║   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝"));
-  console.log(gold("  ║                                                     ║"));
-  console.log(gold("  ║        ◈  Autonomous AI Hiring Copilot  ◈           ║"));
-  console.log(gold("  ║                     v0.1.0 · CLI                     ║"));
-  console.log(gold("  ╚══════════════════════════════════════════════════════╝"));
+  console.log(border);
+  console.log(boxRow(gold));
+  for (const line of logo) {
+    console.log(gold(`  ║${line}║`));
+  }
+  console.log(boxRow(gold));
+  console.log(boxRow(gold, "Autonomous AI Hiring Copilot · v0.1.0"));
+  console.log(gold(`  ╚${"═".repeat(BOX_INNER)}╝`));
   console.log("");
 }
 
@@ -34,7 +46,9 @@ const program = new Command();
 
 program
   .name("hermes")
-  .description("Autonomous AI Hiring Copilot — your terminal is the interface")
+  .description(
+    "Hermes-Hire — Autonomous AI Hiring Copilot — your terminal is the interface",
+  )
   .version("0.1.0")
   .hook("preAction", () => {
     if (process.argv.length > 2) {
@@ -97,7 +111,7 @@ program
   .action(() => {
     const cfg = config.store;
     const active = cfg.activeUserId ? USERS[cfg.activeUserId] : null;
-    console.log(chalk.hex("#d4a853")("\n  HermesHire Status"));
+    console.log(chalk.hex("#d4a853")("\n  Hermes-Hire Status"));
     console.log(chalk.dim("  ───────────────────"));
     console.log(`  Active user:  ${active ? chalk.bold(active.name) + " (" + active.role + ")" : chalk.dim("not set")}`);
     console.log(`  Hermes API:   ${cfg.hermesApiKey ? chalk.green("✓") : chalk.red("✗")}`);
@@ -113,7 +127,7 @@ program
   .argument("[text]", "Natural language request")
   .action(async (text) => {
     if (!text) {
-      console.log(chalk.hex("#d4a853")("\n  🎤 Voice Mode"));
+      console.log(chalk.hex("#d4a853")("\n  🎤 Hermes-Hire Voice Mode"));
       console.log(chalk.dim("  Type natural language. Ctrl+C to exit.\n"));
       // Interactive mode would go here
       console.log(chalk.yellow("  Interactive voice mode coming soon."));
