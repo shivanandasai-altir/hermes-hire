@@ -60,7 +60,7 @@ export async function seedNeonDatabase(force = false): Promise<void> {
         "Strong React/TypeScript background with leadership experience. Excellent fit for Senior Frontend Engineer — recommend proceeding to final review.",
       aiQuestions:
         "1. Describe a complex state management challenge you solved.\n2. How do you approach design system consistency across teams?\n3. Tell us about mentoring engineers through a difficult delivery.",
-      auditLogs: auditLogs as Prisma.InputJsonValue,
+      auditLogs: auditLogs as unknown as Prisma.InputJsonValue,
     },
   });
 

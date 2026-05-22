@@ -1,3 +1,4 @@
+import { Prisma } from "@/app/generated/prisma/client";
 import { db } from "@/lib/db";
 import { seedNeonDatabase, neonHasData } from "@/lib/prisma-seed";
 import type { Stage } from "@/lib/constants";
@@ -114,7 +115,7 @@ export async function moveCandidateStageNeon(
     where: { id: candidateId },
     data: {
       currentStage: newStage,
-      auditLogs: logs,
+      auditLogs: logs as unknown as Prisma.InputJsonValue,
     },
   });
 
@@ -129,15 +130,31 @@ export async function moveCandidateStageNeon(
 export async function nextIdNeon(
   collection: "jobs" | "candidates" | "interviews" | "feedback",
 ): Promise<number> {
-  const model = {
-    jobs: db.job,
-    candidates: db.candidate,
-    interviews: db.interview,
-    feedback: db.feedback,
-  }[collection];
+  const max = await maxIdForCollection(collection);
+  return (max ?? 0) + 1;
+}
 
-  const agg = await model.aggregate({ _max: { id: true } });
-  return (agg._max.id ?? 0) + 1;
+async function maxIdForCollection(
+  collection: "jobs" | "candidates" | "interviews" | "feedback",
+): Promise<number | null> {
+  switch (collection) {
+    case "jobs": {
+      const agg = await db.job.aggregate({ _max: { id: true } });
+      return agg._max.id;
+    }
+    case "candidates": {
+      const agg = await db.candidate.aggregate({ _max: { id: true } });
+      return agg._max.id;
+    }
+    case "interviews": {
+      const agg = await db.interview.aggregate({ _max: { id: true } });
+      return agg._max.id;
+    }
+    case "feedback": {
+      const agg = await db.feedback.aggregate({ _max: { id: true } });
+      return agg._max.id;
+    }
+  }
 }
 
 export function getNeonDbLabel(): string {
