@@ -164,6 +164,94 @@ export function createJobInDb(
   return job;
 }
 
+export function createCandidateInDb(
+  db: Database,
+  data: {
+    name: string;
+    email?: string;
+    phone?: string;
+    resumeText?: string;
+    jobId: string;
+    currentStage?: Stage;
+    onboardToken?: string;
+  },
+  audit: { userId: string; userName: string },
+): Candidate {
+  const id = nextId(db, "candidates");
+  const candidate: Candidate = {
+    id,
+    name: data.name,
+    email: data.email ?? null,
+    phone: data.phone ?? null,
+    resumeText: data.resumeText ?? "",
+    currentStage: data.currentStage ?? "APPLIED",
+    jobId: data.jobId,
+    aiSummary: null,
+    aiQuestions: null,
+    aiRecommendation: null,
+    meetLink: null,
+    auditLogs: [
+      {
+        action: audit.userId.startsWith("user-")
+          ? `Added by ${audit.userName}`
+          : `Invited by ${audit.userName}`,
+        userId: audit.userId,
+        userName: audit.userName,
+        timestamp: new Date().toISOString(),
+      },
+    ],
+    createdAt: new Date().toISOString(),
+  };
+  db.candidates.push(candidate);
+  writeDb(db);
+  return candidate;
+}
+
+export function createInterviewInDb(
+  db: Database,
+  data: {
+    candidateId: string;
+    interviewerId: string;
+  },
+): import("./types").Interview {
+  const id = nextId(db, "interviews");
+  const interview = {
+    id,
+    candidateId: data.candidateId,
+    interviewerId: data.interviewerId,
+    status: "ASSIGNED" as const,
+    scheduledAt: null,
+    transcript: null,
+    vapiCallId: null,
+  };
+  db.interviews.push(interview);
+  writeDb(db);
+  return interview;
+}
+
+export function createFeedbackInDb(
+  db: Database,
+  data: {
+    interviewId: string;
+    rating: number;
+    recommendation: string;
+    comments: string;
+  },
+): import("./types").Feedback {
+  const id = nextId(db, "feedback");
+  const feedback = {
+    id,
+    interviewId: data.interviewId,
+    rating: data.rating,
+    recommendation: data.recommendation,
+    comments: data.comments,
+    createdAt: new Date().toISOString(),
+  };
+  db.feedback.push(feedback);
+  writeDb(db);
+  return feedback;
+}
+
 export function getDbStats(db: Database) {
   return {
     users: db.users.length,

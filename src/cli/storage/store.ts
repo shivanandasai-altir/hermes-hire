@@ -74,6 +74,25 @@ export async function nextId(
   return jsonDb.nextId(db, collection);
 }
 
+export async function createCandidate(
+  data: {
+    name: string;
+    email?: string;
+    phone?: string;
+    resumeText?: string;
+    jobId: string;
+    currentStage?: Stage;
+    onboardToken?: string;
+  },
+  audit: { userId: string; userName: string },
+): Promise<Candidate> {
+  if (getStorageBackend() === "neon") {
+    return neonDb.createCandidateInNeon(data, audit);
+  }
+  const db = jsonDb.readDb();
+  return jsonDb.createCandidateInDb(db, data, audit);
+}
+
 export async function createJob(
   title: string,
   department: string,

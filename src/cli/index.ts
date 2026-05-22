@@ -11,6 +11,9 @@ import { authCommand } from "./commands/auth";
 import { statusCommand } from "./commands/status";
 import { voiceCommand } from "./commands/voice";
 import { jobCommand } from "./commands/job";
+import { candidateCommand } from "./commands/candidate";
+import { interviewCommand } from "./commands/interview";
+import { feedbackCommand } from "./commands/feedback";
 
 const program = new Command();
 
@@ -31,5 +34,8 @@ program.addCommand(authCommand);
 program.addCommand(statusCommand);
 program.addCommand(voiceCommand);
 program.addCommand(jobCommand);
+program.addCommand(candidateCommand);
+program.addCommand(interviewCommand);
+program.addCommand(feedbackCommand);
 
 program.parse(process.argv);

@@ -165,6 +165,56 @@ export async function createJobInNeon(
   };
 }
 
+export async function createCandidateInNeon(
+  data: {
+    name: string;
+    email?: string;
+    phone?: string;
+    resumeText?: string;
+    jobId: string;
+    currentStage?: Stage;
+    onboardToken?: string;
+  },
+  audit: { userId: string; userName: string },
+): Promise<Candidate> {
+  const row = await db.candidate.create({
+    data: {
+      name: data.name,
+      email: data.email ?? "",
+      phone: data.phone ?? null,
+      resumeText: data.resumeText ?? "",
+      currentStage: data.currentStage ?? "APPLIED",
+      jobId: data.jobId,
+      onboardToken: data.onboardToken ?? null,
+      auditLogs: [
+        {
+          action: audit.userId.startsWith("user-")
+            ? `Added by ${audit.userName}`
+            : `Invited by ${audit.userName}`,
+          userId: audit.userId,
+          userName: audit.userName,
+          timestamp: new Date().toISOString(),
+        },
+      ] as unknown as Prisma.InputJsonValue,
+    },
+  });
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    resumeText: row.resumeText,
+    currentStage: row.currentStage as Stage,
+    jobId: row.jobId,
+    aiSummary: row.aiSummary,
+    aiQuestions: row.aiQuestions,
+    aiRecommendation: row.aiRecommendation,
+    meetLink: row.meetLink,
+    auditLogs: parseAuditLogs(row.auditLogs),
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
 export function getNeonDbLabel(): string {
   const url = process.env.DATABASE_URL ?? "";
   try {

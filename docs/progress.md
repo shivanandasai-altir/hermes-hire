@@ -52,21 +52,21 @@
 - [x] Role guard (HR only for create)
 
 ### Step 4: Candidate Commands + AI (25 min)
-- [ ] `hermes candidate add --job <id> --name <name>`
-- [ ] `hermes candidate invite` — generates onboard link
-- [ ] `hermes candidate list [--stage]`
-- [ ] `hermes candidate show <id>`
-- [ ] `hermes candidate move <id> --stage <stage>`
-- [ ] `hermes candidate summary <id>` — calls Hermes API
-- [ ] `hermes candidate questions <id>` — calls Hermes API
+- [x] `hermes candidate add --job <id> --name <name>`
+- [x] `hermes candidate invite` — generates onboard link
+- [x] `hermes candidate list [--stage]`
+- [x] `hermes candidate show <id>`
+- [x] `hermes candidate move <id> --stage <stage>`
+- [x] `hermes candidate summary <id>` — calls Hermes API
+- [x] `hermes candidate questions <id>` — calls Hermes API
 - [ ] Send invite email via Resend
 
 ### Step 5: Interview + Feedback (15 min)
-- [ ] `hermes interview assign <candidate-id> --to <user>`
-- [ ] `hermes interview list [--mine]`
-- [ ] `hermes interview simulate <id>` — Hermes generates fake transcript + scores
-- [ ] `hermes feedback submit <interview-id> --rating <1-5>`
-- [ ] `hermes feedback show <id>`
+- [x] `hermes interview assign <candidate-id> --to <user>`
+- [x] `hermes interview list [--mine]`
+- [x] `hermes interview simulate <id>` — Hermes generates fake transcript + scores
+- [x] `hermes feedback submit <interview-id> --rating <1-5>`
+- [x] `hermes feedback show <id>`
 
 ### Step 6: Manager Review (10 min)
 - [ ] `hermes review list` — shows candidates in MANAGER_REVIEW
