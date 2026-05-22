@@ -46,10 +46,10 @@
 - [x] `pnpm db:push` + `pnpm db:seed` → Neon
 
 ### Step 3: Job Commands (10 min)
-- [ ] `hermes job create <title> [--dept <dept>]`
-- [ ] `hermes job list`
-- [ ] `hermes job show <id>`
-- [ ] Role guard (HR only for create)
+- [x] `hermes job create <title> [--dept <dept>]`
+- [x] `hermes job list`
+- [x] `hermes job show <id>`
+- [x] Role guard (HR only for create)
 
 ### Step 4: Candidate Commands + AI (25 min)
 - [ ] `hermes candidate add --job <id> --name <name>`
