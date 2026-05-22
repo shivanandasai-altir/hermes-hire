@@ -1,71 +1,83 @@
 # HermesHire — Build Progress
 
-> **Pivot:** CLI-first for hackathon MVP. Web app is post-MVP.
+> CLI-first hackathon MVP. Updated automatically as phases complete.
 
 ---
 
-## ✅ Complete
+## Legend
 
-- [x] Hermes 4 API key configured (`HERMES_API_KEY=sk-nous-...`)
-- [x] API verified — Hermes-4-70B responding
-- [x] Hermes API client built (`services/ai.ts`)
-- [x] All AI prompts written (`prompts/`)
-- [x] Hermes setup guide (`docs/hermes-setup.md`)
-- [x] Full API reference (`docs/hermes-api-reference.md`)
-- [x] System design for CLI (`docs/cli-design.md`)
-- [x] Domain glossary (`CONTEXT.md`)
-- [x] gog CLI for Google Meet scheduling (`lib/meet.ts`)
-- [x] Vapi voice agent components (`components/voice/`)
-- [x] 68 Magic UI Pro sections in repo (`components/sections/`)
-- [x] Animated landing page (`app/page.tsx`)
-- [x] Vercel Analytics + Speed Insights installed
+`✅` Done · `🔄` In progress · `❌` Not started
 
 ---
 
-## 🏗️ CLI Build Steps
+## ✅ Completed
 
-### Phase 1: Skeleton (~15 min)
-- [ ] Initialize `package.json` for CLI
-- [ ] Install deps: `commander`, `chalk`, `conf`
-- [ ] Create entry point `bin/hermes.js`
-- [ ] Implement `hermes --help` with all subcommands
-
-### Phase 2: Storage (~15 min)
-- [ ] Create JSON file storage (`src/storage/db.ts`)
-- [ ] Create config management (`src/storage/config.ts`)
-- [ ] Seed demo users (Alice HR, Bob Interviewer, Carol Manager)
-
-### Phase 3: Auth (~5 min)
-- [ ] `hermes auth --key <api-key>`
-- [ ] `hermes auth --as <name>`
-- [ ] `hermes status`
-
-### Phase 4: Core Commands (~25 min)
-- [ ] `hermes job create/list/show`
-- [ ] `hermes candidate add/list/show/move`
-- [ ] `hermes candidate summary <id>` — calls Hermes
-- [ ] `hermes candidate questions <id>` — calls Hermes
-
-### Phase 5: Interview + Feedback (~15 min)
-- [ ] `hermes interview assign/list`
-- [ ] `hermes feedback submit/show`
-
-### Phase 6: Manager Review (~10 min)
-- [ ] `hermes review list`
-- [ ] `hermes review hire/reject <candidate-id>`
-
-### Phase 7: Meet Scheduling (~10 min)
-- [ ] `hermes meet schedule <id> "natural language"`
-- [ ] Wires through `lib/meet.ts` → gog → Meet link
-
-### Phase 8: Install Script + Polish (~15 min)
-- [ ] Create `scripts/install.sh`
-- [ ] Demo seed data (pre-seeded AI content)
-- [ ] `hermes audit <candidate-id>` — timeline
+- [x] Hermes-4-70B API key configured + verified
+- [x] AI client (`services/ai.ts`) — `callHermes()`, `generateCandidateSummary()`, `generateInterviewQuestions()`, `generateRecommendation()`
+- [x] Prompts (`prompts/`) — summary, questions, recommendation, meeting, voice-feedback
+- [x] Email (`lib/email.ts`) — 3 branded templates, Resend, domain `hermes-hire.xyz` verified
+- [x] Landing page (`app/page.tsx`) — CLI-focused, Magic UI Terminal, FlickeringGrid, 68 sections
+- [x] Vapi voice agent integration (`components/voice/`, `lib/voice/`)
+- [x] Google Meet scheduling (`lib/meet.ts` — Hermes + gog CLI)
+- [x] Docs: PRD, CONTEXT.md, CLI design, Hermes API reference, setup guide
 
 ---
 
-## 🔮 Post-Hackathon (Web App)
+## 🏗️ CLI Build
+
+### Step 1: Skeleton + Auth (15 min)
+- [x] `bin/hermes.mjs` — entry point with commander
+- [x] ASCII logo (big block "HERMES" text)
+- [x] `hermes auth --as alice/bob/carol` — role switching
+- [x] `hermes auth --key <api-key>` — API key persistence
+- [x] `hermes status` — show config
+- [x] `hermes voice <text>` — natural language → CLI translation
+- [x] `public/install.sh` — one-curl install script
+- [x] Wrapper script with `"$@"` argument passthrough
+
+### Step 2: JSON Storage + Seed (15 min)
+- [ ] `src/cli/storage/db.ts` — JSON read/write helpers
+- [ ] Auto-incrementing IDs
+- [ ] Seed data (3 users, 1 demo job, 1 demo candidate)
+- [ ] Stage transition validation
+
+### Step 3: Job Commands (10 min)
+- [ ] `hermes job create <title> [--dept <dept>]`
+- [ ] `hermes job list`
+- [ ] `hermes job show <id>`
+- [ ] Role guard (HR only for create)
+
+### Step 4: Candidate Commands + AI (25 min)
+- [ ] `hermes candidate add --job <id> --name <name>`
+- [ ] `hermes candidate invite` — generates onboard link
+- [ ] `hermes candidate list [--stage]`
+- [ ] `hermes candidate show <id>`
+- [ ] `hermes candidate move <id> --stage <stage>`
+- [ ] `hermes candidate summary <id>` — calls Hermes API
+- [ ] `hermes candidate questions <id>` — calls Hermes API
+- [ ] Send invite email via Resend
+
+### Step 5: Interview + Feedback (15 min)
+- [ ] `hermes interview assign <candidate-id> --to <user>`
+- [ ] `hermes interview list [--mine]`
+- [ ] `hermes interview simulate <id>` — Hermes generates fake transcript + scores
+- [ ] `hermes feedback submit <interview-id> --rating <1-5>`
+- [ ] `hermes feedback show <id>`
+
+### Step 6: Manager Review (10 min)
+- [ ] `hermes review list` — shows candidates in MANAGER_REVIEW
+- [ ] `hermes review show <id>` — AI summary + feedback side-by-side
+- [ ] `hermes review hire <id>` — stage → HIRED, audit: "Hired by Manager"
+- [ ] `hermes review reject <id>` — stage → REJECTED, audit: "Rejected by Manager"
+
+### Step 7: Meet + Audit + Voice (15 min)
+- [ ] `hermes meet schedule <id> "<natural language>"` — gog CLI integration
+- [ ] `hermes audit <id>` — full timeline
+- [ ] `hermes interview voice <id> --phone "<number>"` — Vapi live call
+
+---
+
+## ✅ Post-Hackathon (Web App)
 
 - [ ] Prisma schema (5 models)
 - [ ] Neon database
