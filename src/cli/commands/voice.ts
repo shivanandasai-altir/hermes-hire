@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import chalk from "chalk";
+import { execSync } from "node:child_process";
 import { getConfig } from "../storage/config";
 import { getDbStats, readDb } from "../storage/store";
 
@@ -40,6 +41,20 @@ export const voiceCommand = new Command("voice")
     const db = await readDb();
     const stats = await getDbStats(db);
     context += `Jobs: ${stats.jobs}. Candidates: ${stats.candidates}.`;
+
+    // Include job info so Hermes picks a real job ID
+    if (db.jobs.length > 0) {
+      context += `\nAvailable jobs:\n`;
+      for (const job of db.jobs) {
+        context += `- ID: ${job.id} — ${job.title} (${job.department})\n`;
+      }
+    }
+    if (db.candidates.length > 0) {
+      context += `\nAvailable candidates:\n`;
+      for (const c of db.candidates.slice(0, 5)) {
+        context += `- ID: ${c.id} — ${c.name} (Stage: ${c.currentStage})\n`;
+      }
+    }
 
     try {
       console.log(chalk.dim("  Translating..."));
@@ -88,7 +103,24 @@ export const voiceCommand = new Command("voice")
       }
 
       console.log(`\n  ${chalk.hex("#d4a853")("→")} ${chalk.bold(command)}\n`);
-      console.log(chalk.dim("  (command translation only — execution coming soon)"));
+
+      // Auto-execute the translated command
+      if (command.startsWith("hermes ")) {
+        const binPath = process.argv[1].replace("/src/cli/index.ts", "/bin/hermes.mjs");
+        console.log(chalk.dim("  Executing...\n"));
+        try {
+          execSync(`node ${binPath} ${command.slice(7)}`, {
+            stdio: "inherit",
+            cwd: process.cwd(),
+            env: { ...process.env, FORCE_COLOR: "1" },
+          });
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          console.log(chalk.red(`\n❌ Command failed: ${msg}`));
+        }
+      } else {
+        console.log(chalk.dim("  (unrecognized command pattern — not executed)"));
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       console.log(chalk.red(`❌ Error: ${message}`));
