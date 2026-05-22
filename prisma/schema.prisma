@@ -24,65 +24,71 @@ enum Stage {
 }
 
 model User {
-  id          String       @id
+  id          String      @id @default(cuid())
   name        String
-  email       String       @unique
+  email       String      @unique
   role        Role
-  createdAt   DateTime     @default(now())
-  jobsCreated Job[]        @relation("JobCreator")
+  createdAt   DateTime    @default(now())
+  jobsCreated Job[]       @relation("JobCreator")
   interviews  Interview[]
 }
 
 model Job {
-  id          Int          @id @default(autoincrement())
+  id          String      @id @default(cuid())
   title       String
   department  String
-  status      String       @default("OPEN")
+  companyName String      @default("")
+  description String      @default("")
+  status      String      @default("OPEN")
   createdById String
-  createdBy   User         @relation("JobCreator", fields: [createdById], references: [id])
+  createdBy   User        @relation("JobCreator", fields: [createdById], references: [id])
   candidates  Candidate[]
-  createdAt   DateTime     @default(now())
+  createdAt   DateTime    @default(now())
 }
 
 model Candidate {
-  id               Int          @id @default(autoincrement())
+  id               String     @id @default(cuid())
   name             String
   email            String
   phone            String?
-  resumeText       String       @db.Text
-  currentStage     Stage        @default(APPLIED)
-  jobId            Int
-  job              Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  onboardToken     String?      @unique
-  aiSummary        String?      @db.Text
-  aiQuestions      String?      @db.Text
-  aiRecommendation String?      @db.Text
+  resumeText       String     @default("")
+  resumeFileUrl    String?
+  resumeFileName   String?
+  currentStage     Stage      @default(PENDING_ONBOARDING)
+  onboardToken     String?    @unique
+  onboardedAt      DateTime?
+  jobId            String
+  job              Job        @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  aiSummary        String?
+  aiQuestions      String?
+  aiRecommendation String?
   meetLink         String?
-  auditLogs        Json         @default("[]")
+  auditLogs        Json       @default("[]")
   interviews       Interview[]
-  createdAt        DateTime     @default(now())
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 
 model Interview {
-  id            Int       @id @default(autoincrement())
-  candidateId   Int
-  interviewerId String
-  status        String    @default("ASSIGNED")
-  scheduledAt   DateTime?
-  transcript    String?   @db.Text
-  vapiCallId    String?
-  candidate     Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
-  interviewer   User      @relation(fields: [interviewerId], references: [id])
-  feedback      Feedback?
-  createdAt     DateTime  @default(now())
+  id             String    @id @default(cuid())
+  candidateId    String
+  interviewerId  String
+  status         String    @default("ASSIGNED")
+  scheduledAt    DateTime?
+  transcript     String?
+  vapiCallId     String?
+  candidate      Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  interviewer    User      @relation(fields: [interviewerId], references: [id])
+  feedback       Feedback?
+  createdAt      DateTime  @default(now())
 }
 
 model Feedback {
-  id             Int       @id @default(autoincrement())
-  interviewId    Int       @unique
+  id             String    @id @default(cuid())
+  interviewId    String    @unique
   rating         Int
   recommendation String
-  comments       String    @db.Text
+  comments       String
   interview      Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
   createdAt      DateTime  @default(now())
 }
