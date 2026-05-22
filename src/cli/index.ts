@@ -15,6 +15,8 @@ import { candidateCommand } from "./commands/candidate";
 import { interviewCommand } from "./commands/interview";
 import { feedbackCommand } from "./commands/feedback";
 import { reviewCommand } from "./commands/review";
+import { meetCommand } from "./commands/meet";
+import { auditCommand } from "./commands/audit";
 
 const program = new Command();
 
@@ -39,5 +41,7 @@ program.addCommand(candidateCommand);
 program.addCommand(interviewCommand);
 program.addCommand(feedbackCommand);
 program.addCommand(reviewCommand);
+program.addCommand(meetCommand);
+program.addCommand(auditCommand);
 
 program.parse(process.argv);

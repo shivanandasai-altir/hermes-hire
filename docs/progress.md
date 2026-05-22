@@ -75,9 +75,9 @@
 - [x] `hermes review reject <id>` — stage → REJECTED, audit: "Rejected by Manager"
 
 ### Step 7: Meet + Audit + Voice (15 min)
-- [ ] `hermes meet schedule <id> "<natural language>"` — gog CLI integration
-- [ ] `hermes audit <id>` — full timeline
-- [ ] `hermes interview voice <id> --phone "<number>"` — Vapi live call
+- [x] `hermes meet schedule <id> "<natural language>"` — gog CLI integration
+- [x] `hermes audit <id>` — full timeline
+- [x] `hermes interview voice <id> --phone "<number>"` — Vapi live call
 
 ### Step 8: Uploadthing File Upload (15 min)
 - [ ] Set up Uploadthing API route + client

@@ -60,11 +60,14 @@ export async function createCalendarEvent(meeting: MeetingDetails): Promise<Sche
     };
   }
 
+  const gogAccount = process.env.GOG_ACCOUNT || "";
+
   try {
     const args = [
       "calendar",
       "create",
       "primary",
+      ...(gogAccount ? ["--account", gogAccount] : []),
       "--from", meeting.startDateTime,
       "--to", meeting.endDateTime,
       "--summary", meeting.summary,
@@ -80,6 +83,7 @@ export async function createCalendarEvent(meeting: MeetingDetails): Promise<Sche
     const output = execSync(`gog ${args.map(a => `'${a.replace(/'/g, "'\\''")}'`).join(" ")}`, {
       encoding: "utf-8",
       timeout: 15000,
+      env: { ...process.env, GOG_KEYRING_PASSWORD: process.env.GOG_KEYRING_PASSWORD || "" },
     });
 
     const result = JSON.parse(output);
@@ -90,11 +94,16 @@ export async function createCalendarEvent(meeting: MeetingDetails): Promise<Sche
       eventId: result.id ?? undefined,
     };
   } catch (error) {
-    console.error("gog calendar error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create calendar event",
-    };
+    const msg = error instanceof Error ? error.message : "Failed to create calendar event";
+    const isAccountIssue = msg.includes("--account") || msg.includes("missing --account");
+    if (isAccountIssue) {
+      return {
+        success: false,
+        error:
+          `Configure gog account:\n  export GOG_ACCOUNT=your@email.com\n  gog auth add your@email.com --services calendar`,
+      };
+    }
+    return { success: false, error: msg };
   }
 }
 

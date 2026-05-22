@@ -261,3 +261,86 @@ interviewCommand
       console.log(chalk.red(`❌ Simulation error: ${err instanceof Error ? err.message : "Unknown"}`));
     }
   });
+
+// ─── VOICE ───
+interviewCommand
+  .command("voice")
+  .description("Start a live phone interview via Vapi")
+  .argument("<candidate-id>", "Candidate ID")
+  .requiredOption("--phone <number>", "Candidate phone number")
+  .action(async (candidateId: string, opts) => {
+    const user = requireRole(["HR", "INTERVIEWER"]);
+    const db = await readDb();
+    const candidate = db.candidates.find((c) => String(c.id) === candidateId);
+
+    if (!candidate) {
+      console.log(chalk.red(`❌ Candidate #${candidateId} not found`));
+      return;
+    }
+
+    const job = db.jobs.find((j) => j.id === candidate.jobId);
+    const vapiKey = getConfig().vapiApiKey;
+
+    if (!vapiKey) {
+      console.log(chalk.red("❌ Vapi API key not configured."));
+      console.log(chalk.dim("  Set it: hermes auth --vapi-key <key>"));
+      console.log(chalk.dim("  Or simulate instead: hermes interview simulate " + candidateId));
+      return;
+    }
+
+    console.log(chalk.dim(`  📞 Calling ${candidate.name} at ${opts.phone}...`));
+
+    try {
+      const questions = candidate.aiQuestions || "Tell me about yourself and your experience.";
+
+      const response = await fetch("https://api.vapi.ai/call", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${vapiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phoneNumberId: process.env.VAPI_PHONE_NUMBER_ID,
+          assistant: {
+            firstMessage: `Hello ${candidate.name}, I'm your AI interviewer from HermesHire.`,
+            model: {
+              provider: "openai",
+              model: "gpt-4",
+              messages: [
+                {
+                  role: "system",
+                  content: `You are interviewing ${candidate.name} for ${job?.title || "a role"}. Questions: ${questions}`,
+                },
+              ],
+            },
+            voice: { provider: "11labs", voiceId: "sarah" },
+          },
+          customer: { number: opts.phone },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.id) {
+        console.log(chalk.green(`  ✅ Call started!`));
+        console.log(chalk.dim(`  Call ID: ${data.id}`));
+        console.log(chalk.dim(`  Status: ${data.status || "in progress"}`));
+        console.log("");
+        console.log(chalk.dim("  The AI interviewer will call the candidate and conduct"));
+        console.log(chalk.dim("  the interview. Results will be available when complete."));
+
+        // Store Vapi call ID on interview
+        const { createInterviewInDb, writeDb } = await import("../storage/db");
+        const interview = createInterviewInDb(db, {
+          candidateId: String(candidate.id),
+          interviewerId: user.id,
+        });
+        interview.vapiCallId = data.id;
+        writeDb(db);
+      } else {
+        console.log(chalk.red(`❌ Vapi error: ${data.message || JSON.stringify(data)}`));
+      }
+    } catch (err: unknown) {
+      console.log(chalk.red(`❌ Error: ${err instanceof Error ? err.message : "Unknown"}`));
+    }
+  });
