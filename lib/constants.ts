@@ -7,6 +7,7 @@ export const ROLES = {
 export type Role = (typeof ROLES)[keyof typeof ROLES];
 
 export const STAGES = {
+  PENDING_ONBOARDING: "PENDING_ONBOARDING",
   APPLIED: "APPLIED",
   SCREENING: "SCREENING",
   INTERVIEW: "INTERVIEW",
@@ -18,6 +19,7 @@ export const STAGES = {
 export type Stage = (typeof STAGES)[keyof typeof STAGES];
 
 export const VALID_TRANSITIONS: Record<Stage, Stage[]> = {
+  PENDING_ONBOARDING: ["APPLIED", "REJECTED"],
   APPLIED: ["SCREENING", "REJECTED"],
   SCREENING: ["INTERVIEW", "REJECTED"],
   INTERVIEW: ["MANAGER_REVIEW", "REJECTED"],
@@ -31,6 +33,7 @@ export function canTransition(from: Stage, to: Stage): boolean {
 }
 
 export const STAGE_LABELS: Record<Stage, string> = {
+  PENDING_ONBOARDING: "Pending Onboarding",
   APPLIED: "Applied",
   SCREENING: "Screening",
   INTERVIEW: "Interview",

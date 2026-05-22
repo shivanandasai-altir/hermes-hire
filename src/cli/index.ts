@@ -1,33 +1,33 @@
 #!/usr/bin/env node
 
+import { loadProjectEnv } from "@/lib/load-env";
+
+loadProjectEnv();
+
 import { Command } from "commander";
-import { printLogo } from "./ascii";
+import chalk from "chalk";
+import { printHeader } from "./ascii-header";
 import { authCommand } from "./commands/auth";
-// import { jobCommand } from "./commands/job";
-// import { candidateCommand } from "./commands/candidate";
-// import { interviewCommand } from "./commands/interview";
-// import { feedbackCommand } from "./commands/feedback";
-// import { reviewCommand } from "./commands/review";
-// import { meetCommand } from "./commands/meet";
-// import { auditCommand } from "./commands/audit";
+import { statusCommand } from "./commands/status";
+import { voiceCommand } from "./commands/voice";
 
 const program = new Command();
 
 program
   .name("hermes")
-  .description("HermesHire — Autonomous AI Hiring Copilot")
+  .description(
+    "Hermes-Hire — Autonomous AI Hiring Copilot — your terminal is the interface",
+  )
   .version("0.1.0")
-  .hook("preAction", () => {
-    printLogo();
+  .hook("preAction", (_thisCommand, actionCommand) => {
+    const name = actionCommand.name();
+    if (name && name !== "hermes") {
+      printHeader();
+    }
   });
 
 program.addCommand(authCommand);
-// program.addCommand(jobCommand);
-// program.addCommand(candidateCommand);
-// program.addCommand(interviewCommand);
-// program.addCommand(feedbackCommand);
-// program.addCommand(reviewCommand);
-// program.addCommand(meetCommand);
-// program.addCommand(auditCommand);
+program.addCommand(statusCommand);
+program.addCommand(voiceCommand);
 
 program.parse(process.argv);

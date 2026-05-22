@@ -1,6 +1,13 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import { getConfig, setConfig } from "../storage/config";
+import {
+  seedAllDatabases,
+  getDbStats,
+  readDb,
+  getStorageBackend,
+  DB_PATH,
+} from "../storage/store";
 
 const USERS: Record<string, { name: string; role: string }> = {
   alice: { name: "Alice", role: "HR" },
@@ -13,8 +20,9 @@ export const authCommand = new Command("auth")
   .option("-k, --key <api-key>", "Set Hermes API key")
   .option("-a, --as <user>", "Switch active user (alice, bob, carol)")
   .option("--vapi-key <key>", "Set Vapi API key")
-  .option("--seed", "Seed demo data")
-  .action((opts) => {
+  .option("--seed", "Seed demo data (Neon if DATABASE_URL is set, else local JSON)")
+  .option("--force", "Replace existing database when seeding")
+  .action(async (opts) => {
     if (opts.key) {
       setConfig("hermesApiKey", opts.key);
       console.log(chalk.green("✅ API key saved"));
@@ -39,13 +47,37 @@ export const authCommand = new Command("auth")
     }
 
     if (opts.seed) {
-      setConfig("activeUserId", "alice");
-      console.log(chalk.green("✅ Demo data seeded"));
-      console.log(chalk.dim("   Users: alice (HR), bob (Interviewer), carol (Manager)"));
+      try {
+        const seeded = await seedAllDatabases(Boolean(opts.force));
+        setConfig("activeUserId", "alice");
+        const data = seeded.neon ?? seeded.json!;
+        const stats = await getDbStats(data);
+
+        console.log(chalk.green("✅ Demo data seeded"));
+        console.log(
+          chalk.dim(
+            `   Storage: ${seeded.backend === "neon" ? "Neon (DATABASE_URL)" : `JSON (${DB_PATH})`}`,
+          ),
+        );
+        console.log(
+          chalk.dim(
+            `   ${stats.users} users · ${stats.jobs} job · ${stats.candidates} candidate · ${stats.interviews} interview · ${stats.feedback} feedback`,
+          ),
+        );
+        console.log(chalk.dim("   Users: alice (HR), bob (Interviewer), carol (Manager)"));
+        console.log(
+          chalk.dim(
+            `   Demo: Job #${data.jobs[0]?.id ?? 1} — Senior Frontend Engineer · Candidate #${data.candidates[0]?.id ?? 1} — Jane Doe (MANAGER_REVIEW)`,
+          ),
+        );
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.log(chalk.red(`❌ ${message}`));
+        console.log(chalk.dim("   Tip: hermes auth --seed --force"));
+      }
       return;
     }
 
-    // Show current status
     const cfg = getConfig();
     const activeUser = cfg.activeUserId ? USERS[cfg.activeUserId] : null;
     console.log("");
@@ -58,5 +90,18 @@ export const authCommand = new Command("auth")
     }
     console.log(`  API:   ${cfg.hermesApiKey ? chalk.green("✓ configured") : chalk.red("✗ missing")}`);
     console.log(`  Vapi:  ${cfg.vapiApiKey ? chalk.green("✓ configured") : chalk.dim("not set")}`);
+
+    try {
+      const db = await readDb();
+      const stats = await getDbStats(db);
+      const backend = getStorageBackend();
+      console.log(
+        chalk.dim(
+          `  DB:    ${stats.jobs} jobs · ${stats.candidates} candidates (${backend === "neon" ? stats.label : DB_PATH})`,
+        ),
+      );
+    } catch {
+      console.log(chalk.dim("  DB:    not connected"));
+    }
     console.log("");
   });
