@@ -1,124 +1,286 @@
 # HermesHire — Investor Demo Script
 
 > **Format:** 5 min pitch + 5 min Q&A  
-> **Demo mode:** CLI-first, live terminal, role-switching via `hermes auth --as`
+> **Demo mode:** CLI-first, live terminal, role-switching via `hermes auth --as`  
+> **Integrations:** Hermes-4-70B · hermes-hire.xyz · Resend · Vapi · gog CLI · Neon
 
 ---
 
-## 🎬 ACT I — The Problem & Setup (45 sec)
+## 🎬 SCENE 0 — Welcome Speech (~90 seconds)
 
-**You (on stage):**
+### What you say (look at the audience, not the screen)
 
-> *"Hiring is broken. It's slow, manual, and involves 3 different people — HR, Interviewers, Managers — each working in silos, each with their own tools. HR uses the ATS. Interviewers use docs. Managers use email. Nobody sees the full picture.*
+> *"Good morning everyone. Thanks for being here.*
 >
-> *A single hire takes 20+ touchpoints. Resumes get lost. Feedback takes days. Good candidates go cold.*
+> *I want to start with a problem you've all felt.*
 >
-> *HermesHire collapses all of that into one command line — one unified, AI-powered hiring command center."*
+> *Think about the last time your company hired someone. HR creates a job in the ATS. Someone forwards the link to a recruiter. Resumes come in as PDF attachments in email. The interviewer gets a Slack message — 'can you evaluate this person?' They open a Google Doc, write some notes, send it back. The manager waits for three email threads to converge before making a decision.*
+>
+> *One hire. Three roles. Five different tools. Two weeks of coordination.*
+>
+> *That's not a pipeline. That's a Rube Goldberg machine.*
+>
+> *We asked a simple question: what if the hiring pipeline was just one thing — one interface, one data model, one source of truth — with AI built into every step, not bolted on at the end?*
+>
+> *So we built it.*
+>
+> *HermesHire is an AI-native hiring command center that lives in your terminal. Three roles — HR, Interviewer, Manager. One CLI. AI at every stage — from resume summaries to interview simulations to natural language scheduling.*
+>
+> *Everything is live. Everything is connected. Hermes-4-70B from Nous Research powers the AI. Resend sends the emails. Vapi handles phone interviews. gog CLI creates Google Calendar events. All from a single \`curl | bash\` install.*
+>
+> *Let me show you what that looks like."*
 
-**Your hands:**
+*(turn to the terminal and begin Scene 1)*
+
+---
+
+### Alternative: Shorter Version (~45 seconds)
+
+Use this if you're on a tight agenda or sharing the stage.
+
+> *"Hiring is the last multi-tool workflow in every company. HR in the ATS. Interviewers in Google Docs. Managers in email. No single source of truth, and AI is an afterthought.*
+>
+> *We built HermesHire — one CLI for all three roles, with AI native to every stage. Hermes-4-70B summaries, Resend emails, Vapi phone interviews, Google Meet scheduling — all from a \`curl | bash\` install.*
+>
+> *Let me show you."*
+
+---
+
+### Delivery Notes
+
+| Element | How to deliver it |
+|---------|-------------------|
+| **Tone** | Conversational, not scripted. You're telling a story, not reading bullet points. |
+| **Pacing** | The problem description should feel relatable — slow down on "HR creates / someone forwards / interviewer opens / manager waits" — each phrase is a beat. |
+| **The question** | "What if the hiring pipeline was just one thing?" — pause here. Let it land. |
+| **Transition** | "Let me show you" — then turn to the screen decisively. This is the handoff from speech to demo. |
+| **Eye contact** | During the speech, face the audience. Don't look at the terminal until "Let me show you." |
+
+---
+
+## 📋 Complete Runbook — Install to Close
+
+### Pre-Demo Setup (before you step on stage)
 
 ```bash
-# Terminal starts clean. You already have a seeded database.
-# Type this first to show the header — it's big and impressive:
+# Terminal: clean, dark theme, font ≥ 20pt, full screen
+# NOTHING running — you start from raw shell prompt
+#
+# Your .env has:
+#   HERMES_API_KEY=sk-nous-...
+#   RESEND_API_KEY=re_...
+#   DATABASE_URL=postgresql://...
+#
+# Database is freshly seeded:
+#   pnpm db:seed
+#
+# Pre-warm AI:
+#   Run one hermes candidate summary on the seeded candidate
+#   (first call is slow — this warms the model)
+#
+# Disable:
+#   - Notifications
+#   - Screen saver
+#   - All browser tabs except hermes-hire.xyz
 
+export PS1="$ "
+clear
+```
+
+---
+
+## 🎬 SCENE 1 — The Problem & The Install (60 sec)
+
+### What the audience sees
+
+A clean terminal. Just a `$` prompt.
+
+### What you say
+
+> *"Hiring is broken. Three roles — HR, Interviewer, Manager — three different tools, three different logins, no single source of truth. A single hire takes 42 days and $4,000, and good candidates go cold while everyone waits for feedback."*
+
+> *"We built the thing that should have existed all along."*
+
+### Your hands
+
+```bash
+# Type this slowly and deliberately. Each line fills.
+# The install script has a big gold logo — let it render fully.
+
+curl -fsSL https://hermes-hire.xyz/install.sh | bash
+```
+
+Wait for the install to complete. The ASCII "HERMES HIRE" logo fills the terminal with the gold header. Let it breathe for 3 seconds.
+
+> *"One curl piped to bash. Installed in 15 seconds. No Docker, no database setup, no config files to edit."*
+
+```bash
+hermes auth --key sk-nous-...
+```
+
+> *"One API key — Nous Research's Hermes-4-70B. The AI is not GPT-4. We chose Hermes because it's open, it's powerful, and it's purpose-built for structured reasoning."*
+
+```bash
 hermes status
 ```
 
-> *"Let me show you what I mean. Three people. One terminal. AI at every step."*
+The status command shows: API key configured, active user (none), database connected.
+
+> *"The domain — hermes-hire.xyz — real. The email service — Resend — real. The database — Neon Postgres — real. Everything is connected. This is not a prototype."*
+
+> *"Now let me show you what this can do."*
 
 ---
 
-## 🎬 ACT II — HR: Creates a Job & Invites a Candidate (1 min)
+## 🎬 SCENE 2 — HR: Creates a Job & Invites a Candidate (60 sec)
+
+### What you say
+
+> *"I'm Alice, HR. One command, I'm in."*
+
+### Your hands
 
 ```bash
 hermes auth --as alice
 ```
 
-> *(point at screen)* "I'm Alice, HR. One command, I'm in."
+Terminal shows: "Active user: Alice (HR)"
 
 ```bash
 hermes job create "Senior Frontend Engineer" --dept Engineering
 ```
 
-> *"Job created in seconds. No ATS login, no dropdowns, no waiting for page loads."*
+> *"Job created. No form. No page load. One command."*
 
 ```bash
 hermes candidate invite --job 1 --name "Rahul Sharma" --email rahul@example.com
 ```
 
-> *(read the output)* "The system generates an invite link and sends an email — all from the terminal."
+### What happens on screen
+
+```
+📨 Invite link for Rahul Sharma:
+  https://hermes-hire.xyz/onboard/<token>
+📧 Email sent to rahul@example.com
+```
+
+> *"The email went out through **Resend** from our verified domain **hermes-hire.xyz**. Branded template, tracked delivery. The candidate opens the link, fills in their resume, and they're in the pipeline. The domain is real. The email is real. The onboarding page is real."*
 
 ```bash
 hermes candidate list --job 1
 ```
 
-> *"Rahul is now in the pipeline, Pending Onboarding. One command, visible."*
+Shows Rahul in PENDING_ONBOARDING stage.
 
-**Key moment:** Show you went from zero to a candidate in ~4 commands, under 10 seconds of typing.
+> *"One candidate. One command. Visible."*
+
+**Key moment:** Zero to candidate in ~4 commands, ~10 seconds of typing, with real infrastructure behind every line.
 
 ---
 
-## 🎬 ACT III — AI-Generated Candidate Summary (45 sec)
+## 🎬 SCENE 3 — AI Summary & Questions (45 sec)
+
+### What you say
+
+> *"Rahul has submitted his resume. Let's get the AI to work."*
+
+### Your hands
 
 ```bash
 hermes candidate move 1 --stage APPLIED
 hermes candidate summary 1
 ```
 
-> *(dramatic pause while the AI thinks)* "Hermes-4-70B reads the resume against the job description and generates a structured summary — instantly."
+*Wait 3-5 seconds for the response.*
+
+### What happens on screen
+
+```
+🤖 AI Summary:
+  Rahul Sharma has 6 years of frontend engineering experience
+  with React, TypeScript, and Next.js. His background aligns
+  well with the Senior Frontend Engineer role at a fast-paced
+  startup. Key strengths: component architecture, performance
+  optimization, team leadership. Areas to explore: experience
+  with design systems at scale.
+```
+
+> *"This is **Hermes-4-70B** running on Nous Research's inference API — not a GPT wrapper. The model reads the resume against the job description, understands the context, and produces a structured evaluation. This is what the model was built for."*
 
 ```bash
-# after summary appears:
 hermes candidate questions 1
 ```
 
-> *"And interview questions, tailored to this candidate and this role. Interviewers don't need to prep anymore — the AI does it for them."*
+### What happens on screen
 
-**Key moment:** This is the first "wow" — AI delivering real value in seconds.
+```
+❓ AI Interview Questions:
+  1. Walk me through a complex component you built from scratch.
+  2. How do you approach performance optimization in a React app?
+  3. Describe a time you mentored a junior engineer.
+  4. How would you design a design system for a team of 20?
+```
+
+> *"Interview questions — tailored to this candidate, this role, this seniority level. Interviewers don't need to prep. The AI does it for them."*
+
+**Key moment:** First "wow" — AI delivering real, usable value in seconds.
 
 ---
 
-## 🎬 ACT IV — Role Switch: Interviewer Simulates (1 min)
+## 🎬 SCENE 4 — HR Moves to Interview + Assigns (20 sec)
 
 ```bash
 hermes candidate move 1 --stage INTERVIEW
 hermes interview assign 1 --to bob
 ```
 
-> *"Alice moves Rahul to INTERVIEW and assigns Bob as the interviewer."*
+> *"Alice moves Rahul to INTERVIEW stage and assigns Bob — the technical interviewer — to evaluate him."*
+
+---
+
+## 🎬 SCENE 5 — Interviewer: AI Interview Simulation (50 sec)
 
 ```bash
 hermes auth --as bob
 ```
 
-> *(flip roles)* "Now I'm Bob, the interviewer. I see my queue."
+> *"Now I'm Bob. One command. Same terminal. Same data. Different permissions."*
 
 ```bash
 hermes interview list --mine
 ```
 
-> *"My assigned interviews. One command."*
+Shows: Rahul assigned to Bob.
+
+> *"My queue. One command."*
 
 ```bash
 hermes interview simulate 1
 ```
 
-> *"This is the cool part. Hermes simulates a full AI interview — generates a realistic transcript, scores the candidate on communication, technical depth, and problem-solving, and produces a structured recommendation."*
+*Wait 3-5 seconds.*
 
-```bash
-# output shows:
-# Total Score: 85/100
-# Recommendation: Strong Hire
-# Communication: 88/100
-# Technical: 82/100
-# Problem Solving: 78/100
+### What happens on screen
+
+```
+📝 Interview Complete
+  Total Score: 85/100
+  Recommendation: Strong Hire
+  Communication:  88/100
+  Technical:      82/100
+  Problem Solving: 78/100
+  Strengths: System architecture, communication, technical depth
 ```
 
-> *"No calendar coordination. No scheduling. The AI interviews the candidate against the job in under 5 seconds."*
+> *"The AI simulated a full interview — generated a realistic transcript, scored the candidate across three dimensions, and produced a structured hiring recommendation. No calendar coordination. No scheduling. The AI interviews the candidate against the job in under 5 seconds."*
+
+> *"And if you want a real phone call instead — we've integrated **Vapi**. The AI voice agent calls the candidate's actual number, conducts the interview, transcribes it, and returns the same structured feedback. But the simulation alone already gives you 80% of the signal."*
+
+**Key moment:** This is the demo centerpiece — AI replacing a multi-day coordination cycle with a 5-second command.
 
 ---
 
-## 🎬 ACT V — Manager: Review + Decision (45 sec)
+## 🎬 SCENE 6 — Manager: Review + Decision (40 sec)
 
 ```bash
 hermes auth --as carol
@@ -130,158 +292,246 @@ hermes auth --as carol
 hermes review list
 ```
 
-> *"Candidates awaiting my decision — with AI summary and feedback side by side."*
+Shows Rahul in MANAGER_REVIEW with AI summary preview and feedback preview side by side.
+
+> *"Everything in one view. AI summary. Interview feedback. Ratings. No tab switching. No email forwards."*
 
 ```bash
 hermes review show 1
 ```
 
-> *"I see the full picture: AI summary, interview questions, Bob's feedback with ratings. Everything in one view."*
+Full detail view: AI summary, interview questions, Bob's feedback with scores.
+
+> *"I see the full picture before I decide."*
 
 ```bash
 hermes review hire 1
 ```
 
+```
+✅ Rahul Sharma hired!
+  Stage → HIRED · Audit logged
+```
+
 > *"One command. Done. Hired."*
+
+**Key moment:** Show the speed of decision-making when all context is unified.
 
 ---
 
-## 🎬 ACT VI — Audit Trail + Voice (45 sec)
+## 🎬 SCENE 7 — Audit Trail (20 sec)
 
 ```bash
 hermes audit 1
 ```
 
-> *"And every action is logged with timestamps. Full transparency. No black boxes. HR can see exactly what happened, who did what, and when."*
+### What happens on screen
+
+```
+📋 Audit Timeline: Rahul Sharma
+  ──────────────────────────────────
+  Apr 15, 2025 10:32 AM
+  ✅ Hired by Manager
+    by Carol
+
+  Apr 15, 2025 10:28 AM
+  🎙️ Interview simulated, moved to Manager Review
+    by Bob
+
+  Apr 15, 2025 10:25 AM
+  ➡️ Moved to INTERVIEW
+    by Alice
+
+  Apr 15, 2025 10:22 AM
+  ❓ AI Questions generated
+    by Alice
+
+  Apr 15, 2025 10:20 AM
+  🤖 AI Summary generated
+    by Alice
+
+  Apr 15, 2025 10:15 AM
+  📨 Invited to job (Senior Frontend Engineer)
+    by Alice
+
+  6 entries total
+```
+
+> *"Every action, every role switch, every AI generation — logged with timestamps. Full transparency. No black boxes. If a candidate asks 'what happened to my application?', you can show them the exact timeline."*
+
+---
+
+## 🎬 SCENE 8 — Natural Language + Google Meet (40 sec)
 
 ```bash
 hermes auth --as alice
+```
+
+> *"Back to HR. Let's say you don't want to remember command syntax."*
+
+```bash
 hermes voice "schedule a meet with candidate 1 tomorrow at 2pm"
 ```
 
-> *"Or forget command syntax entirely. Just type naturally, and Hermes translates it into the right CLI command. It's a copilot, not just a tool."*
+### What happens on screen
 
-*(show the copied command, or run it)*
+```
+  Translating...
+  → hermes meet schedule 1 "tomorrow at 2pm"
+
+  📋 Copied to clipboard — paste and press Enter to run
+```
+
+> *"Natural language → translated into the correct command. No syntax to remember. Hermes-4-70B acts as a translation layer between English and the CLI. It knows the pipeline, the stages, the roles."*
+
+*(Paste and run)*
 
 ```bash
 hermes meet schedule 1 "tomorrow at 2pm"
 ```
 
-> *"Natural language → Google Meet link → stored on the candidate record."*
+### What happens on screen
+
+```
+  🤖 Parsing request with Hermes...
+  "tomorrow at 2pm"
+
+  📅 Google Meet created!
+  https://meet.google.com/abc-defg-hij
+  Link stored on candidate record
+```
+
+> *"Hermes parses 'tomorrow at 2pm' — understands the datetime — calls **gog CLI** behind the scenes which creates a real Google Calendar event with a Meet link. The link is stored on the candidate record and logged in the audit trail."*
+
+> *"The domain. The email. The calendar. The AI. Everything is connected. Everything is real."*
 
 ---
 
-## 🎬 ACT VII — Close (30 sec)
+## 🎬 SCENE 9 — Close (20 sec)
 
 > *(step away from keyboard, look at audience)*
->
+
 > *"Here's what you need to remember:*
->
-> **One installation.** `curl | bash` — that's it.  
-> **Three roles.** HR, Interviewer, Manager. Same terminal. Same data. Real-time.  
-> **AI at every stage.** Summaries, questions, simulated interviews, voice-to-command.  
-> **No more context switching.** No Slack threads, no email chains, no lost feedback.  
->
-> *HermesHire turns hiring from a slow, multi-tool slog into a single, fast, AI-powered conversation. *
->
+
+> **One install.** `curl | bash` — running in 15 seconds.
+
+> **Three roles.** HR, Interviewer, Manager. Same terminal. Same data. Real-time role switching.
+
+> **AI at every stage.** Summaries, questions, simulated interviews, natural language translation — all powered by Hermes-4-70B.
+
+> **Real integrations, not mockups.** Nous Research. hermes-hire.xyz. Resend. Vapi. gog CLI. Neon. Everything is connected and working today.
+
+> *HermesHire turns hiring from a slow, multi-tool slog into a single, fast, AI-powered conversation.*
+
 > *That's the demo. Happy to take questions."*
 
 ---
 
-## 📋 Recommended Workflow (Full Demo Runbook)
+## ⏱ Timing Summary
 
-This is the exact sequence of commands to execute during the demo, with timing cues.
+| Scene | What Happens | Duration | Cumulative |
+|-------|-------------|----------|------------|
+| 1 | Land + Install + Auth | 60s | 1:00 |
+| 2 | HR creates job + invites candidate | 60s | 2:00 |
+| 3 | AI summary + questions | 45s | 2:45 |
+| 4 | Move to INTERVIEW + assign | 20s | 3:05 |
+| 5 | Simulate interview | 50s | 3:55 |
+| 6 | Manager review + hire | 40s | 4:35 |
+| 7 | Audit timeline | 20s | 4:55 |
+| 8 | Voice-to-command + Meet | 40s | 5:35 |
+| 9 | Close | 20s | 5:55 |
 
-### Pre-Demo Setup (before you step on stage)
+**Budget buffer:** ~5 seconds of slack. Keep the pace tight. If running over, skip Scene 8 (voice + Meet) and mention it in Q&A.
+
+---
+
+## 📦 Command Cheat Sheet (for your reference)
 
 ```bash
-# Already have:
-# 1. Neon database seeded (pnpm db:seed)
-# 2. API key configured (hermes auth --key sk-nous-...)
-# 3. Terminal at project root
-# 4. Screen recording ready
+# ── Scene 1: Install & Auth ──
+curl -fsSL https://hermes-hire.xyz/install.sh | bash
+hermes auth --key sk-nous-...
+hermes status
+
+# ── Scene 2: HR creates & invites ──
+hermes auth --as alice
+hermes job create "Senior Frontend Engineer" --dept Engineering
+hermes candidate invite --job 1 --name "Rahul Sharma" --email rahul@example.com
+hermes candidate list --job 1
+
+# ── Scene 3: AI features ──
+hermes candidate move 1 --stage APPLIED
+hermes candidate summary 1
+hermes candidate questions 1
+
+# ── Scene 4: Assign interviewer ──
+hermes candidate move 1 --stage INTERVIEW
+hermes interview assign 1 --to bob
+
+# ── Scene 5: Interviewer simulates ──
+hermes auth --as bob
+hermes interview list --mine
+hermes interview simulate 1
+
+# ── Scene 6: Manager decides ──
+hermes auth --as carol
+hermes review list
+hermes review show 1
+hermes review hire 1
+
+# ── Scene 7: Audit ──
+hermes audit 1
+
+# ── Scene 8: Voice + Meet ──
+hermes auth --as alice
+hermes voice "schedule a meet with candidate 1 tomorrow at 2pm"
+hermes meet schedule 1 "tomorrow at 2pm"
 ```
 
-### Demo Commands — Timed Sequence
+---
 
-| Time  | Who  | Command | What happens on screen |
-|-------|------|---------|------------------------|
-| 0:00  | —    | `hermes status` | ASCII logo + config display |
-| 0:20  | HR   | `hermes auth --as alice` | Role switch → "Active: Alice (HR)" |
-| 0:30  | HR   | `hermes job create "Senior Frontend Engineer" --dept Engineering` | Job created with ID |
-| 0:45  | HR   | `hermes candidate invite --job 1 --name "Rahul Sharma" --email rahul@example.com` | Invite link + email sent |
-| 1:00  | HR   | `hermes candidate list --job 1` | Table: Rahul in PENDING_ONBOARDING |
-| 1:10  | HR   | `hermes candidate move 1 --stage APPLIED` | Stage moved |
-| 1:20  | HR   | `hermes candidate summary 1` | AI generates summary (3-5 sec) |
-| 1:35  | HR   | `hermes candidate questions 1` | AI generates questions |
-| 1:50  | HR   | `hermes candidate move 1 --stage INTERVIEW` | Stage moved |
-| 2:00  | HR   | `hermes interview assign 1 --to bob` | Interview created |
-| 2:10  | Bob  | `hermes auth --as bob` | Role switch |
-| 2:20  | Bob  | `hermes interview list --mine` | Table: Rahul assigned to Bob |
-| 2:30  | Bob  | `hermes interview simulate 1` | AI interview simulation → scores |
-| 3:00  | Carol | `hermes auth --as carol` | Role switch |
-| 3:10  | Carol | `hermes review list` | Candidates awaiting review |
-| 3:20  | Carol | `hermes review show 1` | Full review view |
-| 3:40  | Carol | `hermes review hire 1` | ✅ Hired! |
-| 3:50  | —    | `hermes audit 1` | Full timeline of all actions |
-| 4:15  | HR   | `hermes auth --as alice` | Back to HR |
-| 4:25  | HR   | `hermes voice "schedule meet with candidate 1 tomorrow at 2pm"` | AI translates → copies command |
-| 4:35  | HR   | *(paste & run)* `hermes meet schedule 1 "tomorrow at 2pm"` | Meet link generated |
-| 4:50  | —    | *Wrap up* | The takeaway |
+## 🎯 Callout Map — Where Each Integration Gets Mentioned
 
-### Timing Notes
-
-| Segment | Duration | What to emphasize |
-|---------|----------|-------------------|
-| ASCII header | 15s (let it breathe) | "This isn't a web app — it's your terminal" |
-| HR creates | 45s | Speed. One command per action. No UI load times. |
-| AI summary | 30s (let AI think) | "This is the real deal — Hermes-4-70B, not a toy" |
-| Role switch | 5s | "Same data, different permissions" |
-| Simulate | 30s | "This is the wow moment — AI interviews the candidate" |
-| Manager decision | 20s | "Everything in one view. One command to hire." |
-| Audit + voice | 30s | Transparency + natural language accessibility |
-| Close | 20s | The mission statement |
+| Integration | Scene | Trigger | The Line |
+|-------------|-------|---------|----------|
+| **Hermes-hire.xyz domain** | 1 | `curl \| bash` URL | "The domain — hermes-hire.xyz — real." |
+| **Hermes API key** | 1 | `hermes auth --key` | "Nous Research's Hermes-4-70B. Open, powerful, built for structured reasoning." |
+| **Neon Postgres** | 1 | `hermes status` | "The database — Neon Postgres — real." |
+| **Resend** | 2 | After invite email sends | "The email went out through Resend from our verified domain. Branded. Tracked. Real." |
+| **Hermes-4-70B** | 3 | `hermes candidate summary 1` | "This is Hermes-4-70B — not a GPT wrapper. It reads resume against job description." |
+| **Vapi** | 5 | After simulation output | "And if you want a real phone call — we've integrated Vapi. The AI agent calls the candidate." |
+| **gog CLI** | 8 | `hermes meet schedule` | "Hermes calls gog CLI — creates a real Google Calendar event with a Meet link." |
 
 ---
 
-## 🚨 Demo Script Tips
+## 🚨 Demo Tips
 
 ### Do NOT show
-
-- **Installation** (`curl | bash`) — skip this, assume it's installed
-- **Database setup** — pre-seeded
-- **Errors** — practice the exact flow, use a fresh seed for each demo
-- **Loading spinners** — type fast, make it feel instant
+- **npm install / pnpm install** — `curl | bash` covers this
+- **Browser tabs** — kill everything except the terminal
+- **Typing mistakes** — practice with a script open on a second monitor
+- **Long AI waits** — pre-warm the model before stepping on stage
 
 ### DO show
+- **The `curl | bash` output** — the gold ASCII logo is theatrical. Let it finish.
+- **Fast role switching** — `hermes auth --as bob` → immediate context change
+- **The audit log at the end** — it visually recaps the entire demo
+- **The Meet link** — it proves the calendar integration is real
 
-- **The ASCII header** — it's impressive and sets the tone
-- **Fast role switching** — `hermes auth --as bob` — immediate context change
-- **AI thinking time** — let it breathe, narrate what's happening
-- **The audit log at the end** — it visually shows everything you just did
-
-### Hardware setup
-
-- **Dark terminal theme** — makes the gold ASCII art pop
-- **Large font** — at least 20pt so the back row can read
-- **Screen at max brightness**
-- **Disable notifications and popups**
-- **Pre-warm the AI** — run a summary before the demo (first AI call is slow)
-
-### Backup plan if AI is slow/non-responsive
-
-- Have a pre-seeded output you can scroll through
-- Fallback line: *"Let me show you what it looks like"* — then run `hermes candidate show 1` to show previously generated content
+### Backup plan
+- AI slow? Run `hermes candidate show 1` to show pre-generated content.
+- API down? Scroll through a recorded terminal session in a text file.
+- Running short on time? **Kill Scene 8** (voice + Meet) and mention it in Q&A.
 
 ---
 
-## 🗣️ Q&A Prep (Common Investor Questions)
+## 🗣️ Q&A Prep
 
 | Question | Answer |
 |----------|--------|
-| *"Isn't the CLI a barrier? Nobody uses terminals anymore."* | "Actually, that's our wedge. Developers and technical founders love it. And every command has a natural language fallback — `hermes voice "do X"` — so you never need to memorize syntax. Next: a web UI that mirrors the CLI exactly." |
-| *"How is this different from an ATS like Greenhouse?"* | "Greenhouse costs $8K+/year. Takes weeks to set up. Requires training. HermesHire is `curl \| bash` — running in 30 seconds. AI-native from day one, not bolted on. And it's one tool for all three roles, not three separate logins." |
-| *"Where's the moat?"* | "Two things: 1) The voice-to-command translation layer — we've trained Hermes to understand hiring workflows specifically. 2) The pipeline-aware AI — summaries, questions, and simulations understand the stage context, not just the resume. Plus, shared database between CLI and web means switching costs go up as data accumulates." |
-| *"Who's the customer?"* | "Two segments: 1) Technical founders and small teams (5-50 people) who want a fast, programmable hiring pipeline. 2) Engineering-led recruiting teams who want AI integration and can't get it from legacy ATS providers." |
-| *"How do you make money?"* | "Free for single-team CLI use. Tiered for multi-job, multi-user with AI credits. Enterprise for dedicated Hermes API + custom pipeline rules." |
+| *"Isn't the CLI a barrier?"* | "It's our wedge. Developers love it. And every command has `hermes voice` as a natural language fallback — you never need to memorize syntax. Next: a web UI that mirrors the CLI exactly." |
+| *"How is this different from an ATS?"* | "$8K+/year, weeks to set up, training required. HermesHire is `curl \| bash` — running in 15 seconds. AI-native from day one, not bolted on. One tool for all three roles, not three separate logins." |
+| *"Are these real integrations or mocks?"* | "Every single one is real. Hermes-4-70B from Nous Research. Resend email from hermes-hire.xyz. Vapi voice calls. gog CLI for Google Calendar. Neon Postgres for the database. We built a product, not a prototype." |
+| *"Where's the moat?"* | "1) The hiring-specific AI layer — we've fine-tuned prompts for pipeline-aware summaries, questions, and simulations. 2) Voice-to-command trained on hiring workflows specifically. 3) Shared database between CLI and the upcoming web UI — switching costs compound." |
+| *"How do you make money?"* | "Free for single-team CLI. Tiered for multi-job, multi-user with AI credits. Enterprise for dedicated Hermes API + custom pipeline rules." |
 | *"What's next?"* | "Web UI (shared DB with CLI), calendar sync, Slack notifications, multi-language voice interviews, API for embedding in other tools." |
