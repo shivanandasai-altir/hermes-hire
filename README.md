@@ -183,7 +183,15 @@ Available models: `Hermes-4.3-36B` (fast), `Hermes-4-70B` (balanced), `Hermes-4-
 
 ## Build Progress
 
-See [`docs/progress.md`](docs/progress.md) for the full checklist of 10 build steps with line-item tracking.
+| Phase | Status | Commands |
+|-------|--------|----------|
+| **1-3: Skeleton + Auth** | ✅ Done | `auth`, `status`, `voice`, `--help` |
+| **4: Core Commands** | ❌ Pending | `hermes job`, `hermes candidate` |
+| **5: Interview + Feedback** | ❌ Pending | `hermes interview`, `hermes feedback` |
+| **6: Manager Review** | ❌ Pending | `hermes review` — hire/reject |
+| **7: Meet + Audit** | ❌ Pending | `hermes meet`, `hermes audit` |
+
+Detailed checklist: [`docs/progress.md`](docs/progress.md)
 
 ## Domain Glossary
 
