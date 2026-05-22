@@ -1,6 +1,25 @@
+/**
+ * Test email — sends a candidate invite email using the actual lib/email.ts template.
+ *
+ * Usage: node scripts/test-email.mjs
+ * Requires RESEND_API_KEY and EMAIL_FROM in .env
+ */
+
+// Load .env
+import { config } from "dotenv";
+config({ path: "../.env" });
+
 import { Resend } from "resend";
 
-const r = new Resend("re_6SENfZnm_NBL5oiSxC5wo4HqA723UH5eB");
+const apiKey = process.env.RESEND_API_KEY;
+const from = process.env.EMAIL_FROM || "HermesHire <notifications@hermes-hire.xyz>";
+
+if (!apiKey) {
+  console.error("❌ RESEND_API_KEY not set in .env");
+  process.exit(1);
+}
+
+const resend = new Resend(apiKey);
 
 const gold = "#d4a853";
 const goldLight = "#e8c06a";
@@ -13,12 +32,17 @@ const cream = "#ece8e1";
 const muted = "#7d7c7a";
 const line = "rgba(255,255,255,0.06)";
 
+const candidateName = "Shivananda";
+const jobTitle = "Senior Frontend Engineer";
+const companyName = "Altir";
+const companyDesc = "Altir is an AI-native hiring platform that helps teams collaborate across the complete recruitment workflow.";
+const onboardLink = "https://hermes-hire.xyz/onboard/abc123";
+
 const html = `
 <div style="background: ${bg}; padding: 48px 20px; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 560px; margin: 0 auto;">
     <tr>
       <td style="background: linear-gradient(145deg, ${bgCard}, ${bgWell}); border-radius: 16px; padding: 48px 44px; border: 1px solid ${line}; box-shadow: 0 8px 48px rgba(0,0,0,0.4);">
-
         <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; margin-bottom: 36px;">
           <tr>
             <td style="height: 3px; background: linear-gradient(90deg, transparent, ${gold} 20%, ${goldLight} 50%, ${gold} 80%, transparent); border-radius: 2px; box-shadow: 0 0 20px ${goldGlow};"></td>
@@ -38,29 +62,29 @@ const html = `
         <p style="color: ${cream}; font-size: 26px; font-weight: 300; text-align: center; margin: 0 0 6px;">You're invited</p>
         <p style="color: ${muted}; font-size: 14px; text-align: center; margin: 0 0 28px;">Interview invitation from HermesHire</p>
 
-        <p style="color: ${cream}; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">Hi <strong>Shivananda</strong>,</p>
+        <p style="color: ${cream}; font-size: 15px; line-height: 1.7; margin: 0 0 16px;">Hi <strong>${candidateName}</strong>,</p>
         <p style="color: ${cream}; font-size: 15px; line-height: 1.7; margin: 0 0 20px;">
-          You have been invited to interview for <strong style="color: ${gold};">Senior Frontend Engineer</strong>
-          at <strong style="color: ${gold};">Altir</strong>.
+          You have been invited to interview for <strong style="color: ${gold};">${jobTitle}</strong>
+          at <strong style="color: ${gold};">${companyName}</strong>.
         </p>
 
         <table cellpadding="0" cellspacing="0" border="0" style="width:100%; background:rgba(255,255,255,0.02); border:1px solid ${line}; border-radius:10px; margin:24px 0;">
           <tr>
             <td style="padding:20px 24px; border-bottom:1px solid ${line};">
               <p style="color:${muted}; font-size:12px; margin:0 0 4px; text-transform:uppercase; letter-spacing:0.06em;">Position</p>
-              <p style="color:${cream}; font-size:15px; margin:0;">Senior Frontend Engineer</p>
+              <p style="color:${cream}; font-size:15px; margin:0;">${jobTitle}</p>
             </td>
           </tr>
           <tr>
             <td style="padding:20px 24px; border-bottom:1px solid ${line};">
               <p style="color:${muted}; font-size:12px; margin:0 0 4px; text-transform:uppercase; letter-spacing:0.06em;">Company</p>
-              <p style="color:${cream}; font-size:15px; margin:0;">Altir</p>
+              <p style="color:${cream}; font-size:15px; margin:0;">${companyName}</p>
             </td>
           </tr>
           <tr>
             <td style="padding:20px 24px;">
               <p style="color:${muted}; font-size:12px; margin:0 0 4px; text-transform:uppercase; letter-spacing:0.06em;">About</p>
-              <p style="color:${cream}; font-size:14px; line-height:1.6; margin:0;">Altir is an AI-native hiring platform that helps teams collaborate across the complete recruitment workflow. We're building the future of hiring.</p>
+              <p style="color:${cream}; font-size:14px; line-height:1.6; margin:0;">${companyDesc}</p>
             </td>
           </tr>
         </table>
@@ -68,7 +92,7 @@ const html = `
         <table cellpadding="0" cellspacing="0" border="0" style="margin:32px auto 28px;">
           <tr>
             <td style="border-radius:10px; background:linear-gradient(135deg, ${gold}, ${goldLight}); box-shadow:0 4px 24px ${goldGlow}; text-align:center; padding:14px 40px;">
-              <a href="https://hermes-hire.xyz/onboard/abc123" style="color:#000; text-decoration:none; font-size:15px; font-weight:600; display:block;">Submit Your Application</a>
+              <a href="${onboardLink}" style="color:#000; text-decoration:none; font-size:15px; font-weight:600; display:block;">Submit Your Application</a>
             </td>
           </tr>
         </table>
@@ -88,12 +112,12 @@ const html = `
   </table>
 </div>`;
 
-const { data, error } = await r.emails.send({
-  from: "HermesHire <notifications@hermes-hire.xyz>",
+const { data, error } = await resend.emails.send({
+  from,
   to: "shivanandasai.38@gmail.com",
-  subject: "You're invited — Senior Frontend Engineer at Altir",
+  subject: `You're invited — ${jobTitle} at ${companyName}`,
   html,
 });
 
-if (error) console.error("Error:", error);
-else console.log("Sent:", data?.id);
+if (error) console.error("❌ Error:", error);
+else console.log(`✅ Sent: ${data.id}`);
