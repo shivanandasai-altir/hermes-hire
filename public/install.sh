@@ -76,7 +76,7 @@ cd "$INSTALL_DIR/repo"
 
 # ─── Install Dependencies ───
 echo -e "${DIM}Installing dependencies...${NC}"
-npm install --silent --no-audit --no-fund 2>/dev/null || pnpm install --silent 2>/dev/null || npm install
+npm install
 
 # ─── Make CLI executable ───
 mkdir -p "$BIN_DIR"
