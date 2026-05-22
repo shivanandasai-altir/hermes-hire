@@ -1,6 +1,5 @@
 import { Command } from "commander";
 import chalk from "chalk";
-import { execSync } from "node:child_process";
 import { getConfig } from "../storage/config";
 import { getDbStats, readDb } from "../storage/store";
 
@@ -104,22 +103,13 @@ export const voiceCommand = new Command("voice")
 
       console.log(`\n  ${chalk.hex("#d4a853")("→")} ${chalk.bold(command)}\n`);
 
-      // Auto-execute the translated command
-      if (command.startsWith("hermes ")) {
-        const binPath = process.argv[1].replace("/src/cli/index.ts", "/bin/hermes.mjs");
-        console.log(chalk.dim("  Executing...\n"));
-        try {
-          execSync(`node ${binPath} ${command.slice(7)}`, {
-            stdio: "inherit",
-            cwd: process.cwd(),
-            env: { ...process.env, FORCE_COLOR: "1" },
-          });
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
-          console.log(chalk.red(`\n❌ Command failed: ${msg}`));
-        }
-      } else {
-        console.log(chalk.dim("  (unrecognized command pattern — not executed)"));
+      // Copy to clipboard + show instruction
+      try {
+        const { execSync } = await import("node:child_process");
+        execSync(`echo ${JSON.stringify(command)} | pbcopy`, { timeout: 1000 });
+        console.log(chalk.dim("  📋 Copied to clipboard — paste and press Enter to run"));
+      } catch {
+        console.log(chalk.dim("  (copy the command above and paste it to run)"));
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

@@ -1,1 +1,3 @@
-{"onlyBuiltDependencies": ["@prisma/engines", "prisma"]}
+{
+  "onlyBuiltDependencies": ["@prisma/engines", "prisma", "esbuild"]
+}
