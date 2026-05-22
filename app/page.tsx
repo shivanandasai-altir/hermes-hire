@@ -19,7 +19,7 @@ const CLI_FEATURES = [
   {
     icon: TerminalIcon,
     title: "One-Curl Install",
-    desc: "curl -fsSL https://hermeshire.sh/install.sh | bash — installed in 10 seconds. No Docker, no database, no setup.",
+    desc: "curl -fsSL https://hermes-hire.xyz/install.sh | bash — installed in 10 seconds. No Docker, no database, no setup.",
   },
   {
     icon: Mic,
@@ -94,7 +94,7 @@ function InstallCommand() {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText('curl -fsSL https://hermeshire.sh/install.sh | bash');
+    await navigator.clipboard.writeText('curl -fsSL https://hermes-hire.xyz/install.sh | bash');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -102,7 +102,7 @@ function InstallCommand() {
   return (
     <div className="inline-flex items-center gap-3 bg-black/40 border border-white/[0.08] rounded-xl px-5 py-3.5 font-mono text-sm">
       <span className="text-[var(--gold)]">$</span>
-      <code className="text-[var(--cream)]/90">curl -fsSL https://hermeshire.sh/install.sh | bash</code>
+      <code className="text-[var(--cream)]/90">curl -fsSL https://hermes-hire.xyz/install.sh | bash</code>
       <button
         onClick={copyToClipboard}
         className="text-[var(--cream)]/30 hover:text-[var(--gold)] transition-colors"
@@ -357,7 +357,7 @@ export default function Home() {
           <div className="flex flex-col items-center gap-4">
             <div className="inline-flex items-center gap-3 bg-black/60 border border-white/[0.08] rounded-xl px-5 py-3.5 font-mono text-sm">
               <span className="text-[var(--gold)]">$</span>
-              <code className="text-[var(--cream)]/90">curl -fsSL https://hermeshire.sh/install.sh | bash</code>
+              <code className="text-[var(--cream)]/90">curl -fsSL https://hermes-hire.xyz/install.sh | bash</code>
             </div>
             <Link href="/login" className="hermes-btn text-base py-3.5 px-8">
               Try the Demo

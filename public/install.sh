@@ -64,7 +64,7 @@ echo -e "${DIM}Downloading HermesHire CLI...${NC}"
 
 # Clone the repo (lightweight, no history)
 if [ ! -d "$INSTALL_DIR/repo" ]; then
-  git clone --depth 1 https://github.com/ssk090/hermes-hire.git "$INSTALL_DIR/repo" 2>/dev/null || {
+  git clone --depth 1 https://github.com/shivanandasai-altir/hermes-hire.git "$INSTALL_DIR/repo" 2>/dev/null || {
     echo -e "${RED}Failed to download. Check your internet connection.${NC}"
     exit 1
   }
