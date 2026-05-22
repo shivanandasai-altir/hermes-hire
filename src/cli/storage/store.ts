@@ -50,7 +50,7 @@ export async function getDbStats(db: Database) {
 }
 
 export async function moveCandidateStage(
-  candidateId: number,
+  candidateId: string,
   newStage: Stage,
   audit: Omit<AuditLogEntry, "timestamp" | "action"> & {
     action?: string;
@@ -66,7 +66,7 @@ export async function moveCandidateStage(
 
 export async function nextId(
   collection: jsonDb.IdCollection,
-): Promise<number> {
+): Promise<string> {
   if (getStorageBackend() === "neon") {
     return neonDb.nextIdNeon(collection);
   }

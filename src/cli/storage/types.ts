@@ -15,7 +15,7 @@ export interface DbUser {
 }
 
 export interface Job {
-  id: number;
+  id: string;
   title: string;
   department: string;
   status: "OPEN" | "CLOSED";
@@ -24,13 +24,13 @@ export interface Job {
 }
 
 export interface Candidate {
-  id: number;
+  id: string;
   name: string;
   email: string | null;
   phone: string | null;
   resumeText: string;
   currentStage: Stage;
-  jobId: number;
+  jobId: string;
   aiSummary: string | null;
   aiQuestions: string | null;
   aiRecommendation: string | null;
@@ -40,8 +40,8 @@ export interface Candidate {
 }
 
 export interface Interview {
-  id: number;
-  candidateId: number;
+  id: string;
+  candidateId: string;
   interviewerId: string;
   status: "ASSIGNED" | "COMPLETED";
   scheduledAt: string | null;
@@ -50,8 +50,8 @@ export interface Interview {
 }
 
 export interface Feedback {
-  id: number;
-  interviewId: number;
+  id: string;
+  interviewId: string;
   rating: number;
   recommendation: string;
   comments: string;

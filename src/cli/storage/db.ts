@@ -62,10 +62,13 @@ export function writeDb(db: Database): void {
 
 export type IdCollection = "jobs" | "candidates" | "interviews" | "feedback";
 
-export function nextId(db: Database, collection: IdCollection): number {
+export function nextId(db: Database, collection: IdCollection): string {
   const items = db[collection];
-  if (items.length === 0) return 1;
-  return Math.max(...items.map((item) => item.id)) + 1;
+  const highest = items.reduce((max, item) => {
+    const n = Number(item.id);
+    return Number.isFinite(n) && n > max ? n : max;
+  }, 0);
+  return String(highest + 1);
 }
 
 export function assertStageTransition(from: Stage, to: Stage): void {
@@ -90,7 +93,7 @@ export function appendAuditLog(
 
 export function moveCandidateStage(
   db: Database,
-  candidateId: number,
+  candidateId: string,
   newStage: Stage,
   audit: Omit<AuditLogEntry, "timestamp" | "action"> & {
     action?: string;

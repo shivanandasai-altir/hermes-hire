@@ -87,7 +87,7 @@ export async function readDbFromNeon(): Promise<Database> {
 }
 
 export async function moveCandidateStageNeon(
-  candidateId: number,
+  candidateId: string,
   newStage: Stage,
   audit: Omit<AuditLogEntry, "timestamp" | "action"> & {
     action?: string;
@@ -128,33 +128,18 @@ export async function moveCandidateStageNeon(
 }
 
 export async function nextIdNeon(
-  collection: "jobs" | "candidates" | "interviews" | "feedback",
-): Promise<number> {
-  const max = await maxIdForCollection(collection);
-  return (max ?? 0) + 1;
+  _collection: "jobs" | "candidates" | "interviews" | "feedback",
+): Promise<string> {
+  // Prisma generates cuid IDs automatically for new rows, so this is only
+  // useful as a client-side placeholder. Return a random cuid-like string.
+  return generateClientId();
 }
 
-async function maxIdForCollection(
-  collection: "jobs" | "candidates" | "interviews" | "feedback",
-): Promise<number | null> {
-  switch (collection) {
-    case "jobs": {
-      const agg = await db.job.aggregate({ _max: { id: true } });
-      return agg._max.id;
-    }
-    case "candidates": {
-      const agg = await db.candidate.aggregate({ _max: { id: true } });
-      return agg._max.id;
-    }
-    case "interviews": {
-      const agg = await db.interview.aggregate({ _max: { id: true } });
-      return agg._max.id;
-    }
-    case "feedback": {
-      const agg = await db.feedback.aggregate({ _max: { id: true } });
-      return agg._max.id;
-    }
+function generateClientId(): string {
+  if (typeof globalThis.crypto?.randomUUID === "function") {
+    return globalThis.crypto.randomUUID();
   }
+  return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export function getNeonDbLabel(): string {

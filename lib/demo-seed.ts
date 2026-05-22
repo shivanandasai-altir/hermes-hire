@@ -55,7 +55,7 @@ export function createDemoDatabase(): Database {
     users: DEMO_USERS.map((u) => ({ id: u.id, name: u.name, role: u.role })),
     jobs: [
       {
-        id: 1,
+        id: "demo-job-1",
         title: "Senior Frontend Engineer",
         department: "Engineering",
         status: "OPEN",
@@ -65,13 +65,13 @@ export function createDemoDatabase(): Database {
     ],
     candidates: [
       {
-        id: 1,
+        id: "demo-candidate-1",
         name: "Jane Doe",
         email: "jane.doe@example.com",
         phone: "+1-555-0100",
         resumeText: DEMO_RESUME,
         currentStage: STAGES.MANAGER_REVIEW,
-        jobId: 1,
+        jobId: "demo-job-1",
         aiSummary:
           "Strong React/TypeScript background with leadership experience. Excellent fit for Senior Frontend Engineer — recommend proceeding to final review.",
         aiQuestions:
@@ -84,8 +84,8 @@ export function createDemoDatabase(): Database {
     ],
     interviews: [
       {
-        id: 1,
-        candidateId: 1,
+        id: "demo-interview-1",
+        candidateId: "demo-candidate-1",
         interviewerId: "bob",
         status: "COMPLETED",
         scheduledAt: null,
@@ -95,8 +95,8 @@ export function createDemoDatabase(): Database {
     ],
     feedback: [
       {
-        id: 1,
-        interviewId: 1,
+        id: "demo-feedback-1",
+        interviewId: "demo-interview-1",
         rating: 5,
         recommendation: "Strong Hire",
         comments:
