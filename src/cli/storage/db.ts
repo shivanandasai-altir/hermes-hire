@@ -11,6 +11,7 @@ import type {
   AuditLogEntry,
   Candidate,
   Database,
+  Job,
 } from "./types";
 
 export const DB_DIR = path.join(os.homedir(), ".hermeshire");
@@ -141,6 +142,26 @@ export function seedDatabase(force = false): Database {
   const db = createSeedDatabase();
   writeDb(db);
   return db;
+}
+
+export function createJobInDb(
+  db: Database,
+  title: string,
+  department: string,
+  createdById: string,
+): Job {
+  const id = nextId(db, "jobs");
+  const job: Job = {
+    id,
+    title,
+    department,
+    status: "OPEN",
+    createdById,
+    createdAt: new Date().toISOString(),
+  };
+  db.jobs.push(job);
+  writeDb(db);
+  return job;
 }
 
 export function getDbStats(db: Database) {

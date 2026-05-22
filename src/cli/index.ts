@@ -10,6 +10,7 @@ import { printHeader } from "./ascii-header";
 import { authCommand } from "./commands/auth";
 import { statusCommand } from "./commands/status";
 import { voiceCommand } from "./commands/voice";
+import { jobCommand } from "./commands/job";
 
 const program = new Command();
 
@@ -29,5 +30,6 @@ program
 program.addCommand(authCommand);
 program.addCommand(statusCommand);
 program.addCommand(voiceCommand);
+program.addCommand(jobCommand);
 
 program.parse(process.argv);

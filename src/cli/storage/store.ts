@@ -1,6 +1,6 @@
 import { hasDatabaseUrl } from "@/lib/load-env";
 import type { Stage } from "@/lib/constants";
-import type { AuditLogEntry, Candidate, Database } from "./types";
+import type { AuditLogEntry, Candidate, Database, Job } from "./types";
 import * as jsonDb from "./db";
 import * as neonDb from "./prisma-db";
 
@@ -72,6 +72,23 @@ export async function nextId(
   }
   const db = jsonDb.readDb();
   return jsonDb.nextId(db, collection);
+}
+
+export async function createJob(
+  title: string,
+  department: string,
+  createdById: string,
+): Promise<Job> {
+  if (getStorageBackend() === "neon") {
+    return neonDb.createJobInNeon(title, department, createdById);
+  }
+  const db = jsonDb.readDb();
+  return jsonDb.createJobInDb(db, title, department, createdById);
+}
+
+export async function getJobs(): Promise<Job[]> {
+  const db = await readDb();
+  return db.jobs;
 }
 
 export { assertStageTransition } from "./db";

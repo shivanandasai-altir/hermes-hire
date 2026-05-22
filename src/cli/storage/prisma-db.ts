@@ -142,6 +142,29 @@ function generateClientId(): string {
   return `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
 }
 
+export async function createJobInNeon(
+  title: string,
+  department: string,
+  createdById: string,
+): Promise<Job> {
+  const row = await db.job.create({
+    data: {
+      title,
+      department,
+      status: "OPEN",
+      createdById,
+    },
+  });
+  return {
+    id: row.id,
+    title: row.title,
+    department: row.department,
+    status: row.status as Job["status"],
+    createdById: row.createdById,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
 export function getNeonDbLabel(): string {
   const url = process.env.DATABASE_URL ?? "";
   try {
