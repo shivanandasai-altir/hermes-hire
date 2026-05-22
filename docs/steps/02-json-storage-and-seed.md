@@ -1,4 +1,4 @@
-# Step 2: JSON Storage + Seed Data
+# Step 2: Storage + Seed Data
 
 **Estimated time:** ~15 min  
 **Depends on:** Step 1  
@@ -8,27 +8,62 @@
 
 ## Goal
 
-A local JSON database at `~/.hermeshire/db.json` that stores all jobs, candidates, interviews, and feedback. Seed data with demo users.
+Store jobs, candidates, interviews, and feedback with demo seed data. Supports:
+
+1. **Neon (recommended)** — shared Postgres via `DATABASE_URL` in `.env` (CLI + web app)
+2. **Local JSON fallback** — `~/.hermeshire/db.json` when `DATABASE_URL` is unset
 
 ## Key Files
 
-- `src/cli/storage/db.ts` — JSON read/write helpers
-- `~/.hermeshire/db.json` — Data file
+| File | Purpose |
+|------|---------|
+| `prisma/schema.prisma` | 5 models: User, Job, Candidate, Interview, Feedback |
+| `lib/demo-seed.ts` | Shared demo dataset (users, job, candidate, interview, feedback) |
+| `lib/prisma-seed.ts` | Neon seed + clear helpers |
+| `prisma/seed.ts` | `pnpm db:seed` entry point |
+| `src/cli/storage/db.ts` | JSON read/write (fallback) |
+| `src/cli/storage/store.ts` | Picks Neon vs JSON from `DATABASE_URL` |
+| `~/.hermeshire/db.json` | Local fallback data file |
 
-## Schema
+## Setup (Neon)
 
-```json
-{
-  "version": 1,
-  "jobs": [{ "id": 1, "title": "...", "department": "...", "status": "OPEN" }],
-  "candidates": [{ "id": 1, "name": "...", "currentStage": "APPLIED", ... }],
-  "interviews": [{ "id": 1, "candidateId": 1, "interviewerId": "bob", "status": "ASSIGNED" }],
-  "feedback": [{ "id": 1, "interviewId": 1, "rating": 4, "recommendation": "Hire", "comments": "..." }]
-}
+```bash
+# .env
+DATABASE_URL="postgresql://...@ep-xxx.neon.tech/neondb?sslmode=require"
+
+pnpm db:push      # create tables on Neon
+pnpm db:seed      # seed demo data
+# or replace existing:
+pnpm db:reset-seed
 ```
+
+CLI (with `.env` in project root):
+
+```bash
+hermes auth --seed --force
+hermes status     # shows Neon host + counts
+```
+
+## Setup (local JSON only)
+
+Unset `DATABASE_URL` or run CLI outside the repo without `.env`:
+
+```bash
+hermes auth --seed --force
+# writes ~/.hermeshire/db.json
+```
+
+## Schema (Prisma)
+
+- **User** — string id (`alice`, `bob`, `carol`)
+- **Job / Candidate / Interview / Feedback** — auto-increment integer ids
+- **Stage** enum includes `PENDING_ONBOARDING`
+- **auditLogs** — JSON on `Candidate`
 
 ## Acceptance Criteria
 
-- [ ] Reading and writing to db.json works
-- [ ] Auto-incrementing IDs for jobs, candidates, interviews, feedback
-- [ ] Seed data creates 3 users + 1 demo job + 1 demo candidate
+- [x] Reading and writing works (Neon via Prisma, or local JSON)
+- [x] Auto-incrementing IDs for jobs, candidates, interviews, feedback
+- [x] Seed creates 3 users + 1 demo job + 1 demo candidate (+ interview + feedback)
+- [x] Stage transition validation (`assertStageTransition`, `moveCandidateStage`)
+- [x] `pnpm db:push` + `pnpm db:seed` populate Neon

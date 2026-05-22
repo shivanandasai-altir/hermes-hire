@@ -35,11 +35,15 @@
 - [x] `public/install.sh` — one-curl install script
 - [x] Wrapper script with `"$@"` argument passthrough
 
-### Step 2: JSON Storage + Seed (15 min)
-- [ ] `src/cli/storage/db.ts` — JSON read/write helpers
-- [ ] Auto-incrementing IDs
-- [ ] Seed data (3 users, 1 demo job, 1 demo candidate)
-- [ ] Stage transition validation
+### Step 2: Storage + Seed (15 min)
+- [x] `src/cli/storage/db.ts` — JSON read/write helpers (fallback)
+- [x] `prisma/schema.prisma` — 5 models (User, Job, Candidate, Interview, Feedback)
+- [x] `lib/demo-seed.ts` + `lib/prisma-seed.ts` + `prisma/seed.ts`
+- [x] `src/cli/storage/store.ts` — Neon when `DATABASE_URL` set, else JSON
+- [x] Auto-incrementing IDs
+- [x] Seed data (3 users, 1 demo job, 1 demo candidate)
+- [x] Stage transition validation
+- [x] `pnpm db:push` + `pnpm db:seed` → Neon
 
 ### Step 3: Job Commands (10 min)
 - [ ] `hermes job create <title> [--dept <dept>]`
@@ -79,8 +83,8 @@
 
 ## ✅ Post-Hackathon (Web App)
 
-- [ ] Prisma schema (5 models)
-- [ ] Neon database
+- [x] Prisma schema (5 models)
+- [x] Neon database (seed via `pnpm db:seed`)
 - [ ] Login + middleware
 - [ ] Role dashboards (HR, Interviewer, Manager)
 - [ ] Kanban pipeline

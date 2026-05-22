@@ -18,7 +18,7 @@ hermes auth --as bob       →  Interviewer
 hermes auth --as carol     →  Manager
 ```
 
-One `curl | bash` installs the CLI. Your Hermes API key powers the AI. Your Neon database stores everything. No Docker, no web server, no setup.
+One `curl | bash` installs the CLI. Your Hermes API key powers the AI. A Neon Postgres database (or local JSON fallback) stores everything. No Docker, no web server, no setup.
 
 ## Tech Stack
 
@@ -26,7 +26,7 @@ One `curl | bash` installs the CLI. Your Hermes API key powers the AI. Your Neon
 |-------|-----------|
 | CLI | Node.js + `commander` + `chalk` + `conf` |
 | AI | [Nous Research Hermes 4](https://inference-api.nousresearch.com/v1) (Hermes-4-70B) |
-| Storage | JSON file (`~/.hermeshire/db.json`) or [Neon](https://neon.tech/) Postgres |
+| Storage | [Neon](https://neon.tech/) Postgres (default with `DATABASE_URL`) or local JSON (`~/.hermeshire/db.json`) |
 | Voice | [Vapi](https://vapi.ai/) (AI phone interviews) |
 | Calendar | [gog CLI](https://gogcli.sh/) (Google Meet scheduling) |
 | Email | [Resend](https://resend.com/) (candidate notifications) |
@@ -41,6 +41,26 @@ hermes auth --key sk-nous-...
 hermes auth --as alice
 hermes --help
 ```
+
+## Database Setup (Neon)
+
+Add your Neon connection string to `.env`:
+
+```env
+DATABASE_URL="postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require"
+```
+
+Create tables and seed demo data:
+
+```bash
+pnpm db:push          # push schema to Neon
+pnpm db:seed          # seed 3 users + demo job/candidate
+# or from CLI (reads .env from project root):
+pnpm hermes auth --seed --force
+pnpm hermes status
+```
+
+Without `DATABASE_URL`, the CLI uses `~/.hermeshire/db.json` instead.
 
 ## CLI Commands
 
@@ -138,7 +158,13 @@ PENDING_ONBOARDING → APPLIED → SCREENING → INTERVIEW → MANAGER_REVIEW �
 ├── public/install.sh          # one-curl install script
 ├── services/ai.ts             # Hermes API client
 ├── prompts/                   # AI system prompts (5 files)
+├── prisma/
+│   ├── schema.prisma          # 5 models (User, Job, Candidate, …)
+│   └── seed.ts                # Neon demo seed
 ├── lib/
+│   ├── demo-seed.ts           # shared demo dataset
+│   ├── prisma-seed.ts         # Neon seed helpers
+│   ├── db.ts                  # Prisma client
 │   ├── meet.ts                # Google Meet via gog
 │   ├── email.ts               # Resend email templates
 │   └── voice/                 # Vapi voice feedback
@@ -156,7 +182,7 @@ PENDING_ONBOARDING → APPLIED → SCREENING → INTERVIEW → MANAGER_REVIEW �
 | Step | What | Status |
 |------|------|--------|
 | **1** | CLI skeleton + auth + install | ✅ Done |
-| **2** | JSON storage + seed data | ❌ Pending |
+| **2** | Storage + seed (Neon + JSON fallback) | ✅ Done |
 | **3** | Job commands | ❌ Pending |
 | **4** | Candidate commands + AI | ❌ Pending |
 | **5** | Interview + feedback | ❌ Pending |
@@ -169,6 +195,7 @@ See [`docs/progress.md`](docs/progress.md) for detailed checklist.
 
 | Variable | Required | For |
 |----------|----------|-----|
+| `DATABASE_URL` | ✅ (team) | Neon Postgres — shared CLI + web data |
 | `HERMES_API_KEY` | ✅ | AI features (summary, questions, voice-to-command) |
 | `RESEND_API_KEY` | ❌ | Email notifications to candidates |
 | `NEXT_PUBLIC_VAPI_WEB_TOKEN` | ❌ | Vapi phone interviews |
