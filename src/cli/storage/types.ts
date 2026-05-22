@@ -18,6 +18,8 @@ export interface Job {
   id: string;
   title: string;
   department: string;
+  companyName?: string;
+  description?: string;
   status: "OPEN" | "CLOSED";
   createdById: string;
   createdAt: string;

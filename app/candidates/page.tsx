@@ -32,6 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { UploadDropzone } from "@/lib/uploadthing";
 
 // ─── Zod Schemas ───
 
@@ -40,6 +41,8 @@ const candidateSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
   resumeText: z.string().min(20, "Resume must be at least 20 characters"),
+  resumeFileUrl: z.string().optional(),
+  resumeFileName: z.string().optional(),
 });
 
 type CandidateFormData = z.infer<typeof candidateSchema>;
@@ -190,11 +193,22 @@ function ResumeUpload({ register, setValue, errors }: ResumeUploadProps) {
         )}
       </label>
 
-      {/* Manual text area fallback */}
+      {/* Uploadthing Dropzone */}
+              <UploadDropzone
+                endpoint="resumeUploader"
+                className="mb-3 border-white/[0.08] ut-button:bg-[#d4a853] ut-button:text-black ut-button:after:bg-[#e8c06a] ut-button:rounded-xl ut-label:text-[#ece8e1] ut-allowed-content:text-[#7d7c7a]"
+                onClientUploadComplete={(res) => {
+                  if (res?.[0]) {
+                    setFileName(res[0].name);
+                    fetch(res[0].url).then(r => r.text()).then(t => { if (t.length > 20) setValue("resumeText", t, { shouldValidate: true }); }).catch(() => {});
+                  }
+                }}
+              />
+
       <textarea
         {...register("resumeText")}
         rows={4}
-        className="w-full mt-3 bg-black/40 border border-white/[0.08] rounded-xl px-4 py-3 text-[#ece8e1] text-sm placeholder:text-[#7d7c7a]/50 focus:outline-none focus:border-[#d4a853]/50 transition-colors resize-none"
+        className="w-full bg-black/40 border border-white/[0.08] rounded-xl px-4 py-3 text-[#ece8e1] text-sm placeholder:text-[#7d7c7a]/50 focus:outline-none focus:border-[#d4a853]/50 transition-colors resize-none"
         placeholder="Or paste resume text here..."
       />
       {errors.resumeText && <p className="text-red-400 text-xs mt-1">{errors.resumeText.message}</p>}

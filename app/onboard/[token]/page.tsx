@@ -2,8 +2,9 @@
 
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Send, Upload, FileText } from "lucide-react";
+import { Check, Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { UploadDropzone } from "@/lib/uploadthing";
 
 interface JobDetails {
   title: string;
@@ -154,37 +155,17 @@ export default function OnboardPage({
             <div>
               <label className="block text-[#7d7c7a] text-xs uppercase tracking-widest mb-2">Resume / Experience</label>
 
-              {/* Upload zone */}
-              <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/[0.08] rounded-xl cursor-pointer hover:border-[#d4a853]/30 transition-colors bg-black/20 mb-3">
-                <input
-                  type="file"
-                  accept=".pdf,.txt,.doc,.docx"
-                  className="hidden"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    try {
-                      let text = "";
-                      if (file.type === "text/plain" || file.name.endsWith(".txt")) {
-                        text = await file.text();
-                      } else if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
-                        const buf = await file.arrayBuffer();
-                        const pdf = await import("pdfjs-dist").then(m => m.getDocument({ data: buf }).promise);
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                          const page = await pdf.getPage(i);
-                          const content = await page.getTextContent();
-                          text += content.items.map((item) => (item as { str: string }).str).join(" ") + "\n";
-                        }
-                      } else {
-                        text = await file.text();
-                      }
-                      setForm(f => ({ ...f, resumeText: text.trim() }));
-                    } catch {}
-                  }}
-                />
-                <Upload className="size-6 text-[#7d7c7a]" />
-                <span className="text-xs text-[#7d7c7a] mt-1">Click to upload PDF, DOCX, or TXT</span>
-              </label>
+              <UploadDropzone
+                endpoint="resumeUploader"
+                className="mb-3 border-white/[0.08] ut-button:bg-[#d4a853] ut-button:text-black ut-button:after:bg-[#e8c06a] ut-button:rounded-xl ut-label:text-[#ece8e1] ut-allowed-content:text-[#7d7c7a]"
+                onClientUploadComplete={(res) => {
+                  if (res?.[0]) {
+                    fetch(res[0].url).then(r => r.text()).then(t => {
+                      if (t && t.length > 20) setForm(f => ({ ...f, resumeText: t }));
+                    }).catch(() => {});
+                  }
+                }}
+              />
 
               <textarea
                 required

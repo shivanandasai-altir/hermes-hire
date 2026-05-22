@@ -80,11 +80,11 @@
 - [x] `hermes interview voice <id> --phone "<number>"` — Vapi live call
 
 ### Step 8: Uploadthing File Upload (15 min)
-- [ ] Set up Uploadthing API route + client
-- [ ] Replace file upload zones with UploadDropzone
-- [ ] Store resumeFileUrl on Candidate record
-- [ ] Keep extracted text (resumeText) for AI
-- [ ] Update Prisma schema with resumeFileUrl field
+- [x] Set up Uploadthing API route + client
+- [x] Replace file upload zones with UploadDropzone
+- [x] Store resumeFileUrl on Candidate record
+- [x] Keep extracted text (resumeText) for AI
+- [x] Update Prisma schema with resumeFileUrl field
 
 ---
 
