@@ -69,10 +69,10 @@
 - [x] `hermes feedback show <id>`
 
 ### Step 6: Manager Review (10 min)
-- [ ] `hermes review list` — shows candidates in MANAGER_REVIEW
-- [ ] `hermes review show <id>` — AI summary + feedback side-by-side
-- [ ] `hermes review hire <id>` — stage → HIRED, audit: "Hired by Manager"
-- [ ] `hermes review reject <id>` — stage → REJECTED, audit: "Rejected by Manager"
+- [x] `hermes review list` — shows candidates in MANAGER_REVIEW
+- [x] `hermes review show <id>` — AI summary + feedback side-by-side
+- [x] `hermes review hire <id>` — stage → HIRED, audit: "Hired by Manager"
+- [x] `hermes review reject <id>` — stage → REJECTED, audit: "Rejected by Manager"
 
 ### Step 7: Meet + Audit + Voice (15 min)
 - [ ] `hermes meet schedule <id> "<natural language>"` — gog CLI integration
