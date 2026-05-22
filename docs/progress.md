@@ -59,7 +59,7 @@
 - [x] `hermes candidate move <id> --stage <stage>`
 - [x] `hermes candidate summary <id>` — calls Hermes API
 - [x] `hermes candidate questions <id>` — calls Hermes API
-- [ ] Send invite email via Resend
+- [x] Send invite email via Resend
 
 ### Step 5: Interview + Feedback (15 min)
 - [x] `hermes interview assign <candidate-id> --to <user>`

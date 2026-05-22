@@ -96,6 +96,11 @@ candidateCommand
   .action(async (opts) => {
     const user = requireRole(["HR"]);
     const token = `onboard-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+    // Get job details for email
+    const db = await readDb();
+    const job = db.jobs.find((j) => String(j.id) === opts.job);
+
     const candidate = await createCandidate(
       {
         name: opts.name,
@@ -108,8 +113,31 @@ candidateCommand
       },
       { userId: user.id, userName: user.name },
     );
+
+    const onboardLink = `https://hermes-hire.xyz/onboard/${token}`;
+
     console.log(chalk.hex("#d4a853")(`  📨 Invite link for ${chalk.bold(candidate.name)}:`));
-    console.log(chalk.dim(`  https://hermes-hire.xyz/onboard/${token}`));
+    console.log(chalk.dim(`  ${onboardLink}`));
+
+    // Send email if Resend is configured
+    if (opts.email && process.env.RESEND_API_KEY) {
+      try {
+        const { sendCandidateInviteEmail } = await import("@/lib/email");
+        await sendCandidateInviteEmail({
+          candidateName: opts.name,
+          candidateEmail: opts.email,
+          jobTitle: job?.title || "Unknown Position",
+          companyName: job?.companyName || "the company",
+          companyDescription: job?.description || undefined,
+          onboardLink,
+        });
+        console.log(chalk.dim(`  📧 Email sent to ${opts.email}`));
+      } catch (err: unknown) {
+        console.log(chalk.dim(`  ⚠️  Email send failed: ${err instanceof Error ? err.message : "Unknown"}`));
+      }
+    } else if (opts.email && !process.env.RESEND_API_KEY) {
+      console.log(chalk.dim(`  ⚠️  RESEND_API_KEY not set — email not sent`));
+    }
   });
 
 // ─── LIST ───
